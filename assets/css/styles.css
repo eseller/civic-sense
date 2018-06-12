@@ -1,0 +1,10 @@
+html, body {
+    height: 100%;
+}
+
+/* IE6 hack */
+*html #features-boxed {
+  height: 100%;
+}
+
+.box:hover { cursor: pointer;}
