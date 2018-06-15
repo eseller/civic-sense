@@ -68,7 +68,7 @@
       $sql2 = "SELECT tag FROM ente WHERE username = $username";
       $result2 = mysqli_query($link, $sql1);
       $row2 = mysqli_fetch_assoc($result1);
-      return false;
+      return true;
     }
     // if($trovato==1){
     //   $sql2 = "SELECT tag FROM ente WHERE username = $username";
@@ -261,10 +261,10 @@
         </form>
       </div>
     </div>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/Contact-FormModal-Contact-Form-with-Google-Map.js"></script>
-    <script src="assets/js/Sidebar-Menu.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/js/jquery.min.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/js/Contact-FormModal-Contact-Form-with-Google-Map.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/js/Sidebar-Menu.js"></script>
     <script>
       function AttivaSubmit(){
         document.getElementById('creaticket').removeAttribute('disabled');

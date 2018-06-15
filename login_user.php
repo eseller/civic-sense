@@ -46,11 +46,22 @@
                       mysqli_stmt_bind_result($stmt, $username, $hashed_password);
                       if(mysqli_stmt_fetch($stmt)){
                           if(password_verify($password, $hashed_password)){
+                            // Prepare query to check the right table
+                            $sqlente = "SELECT username FROM ente WHERE username ='$username'";
+                            $resultente = mysqli_query($link,$sqlente);
+                            // If result > 0 username found in ente
+                            if(mysqli_num_rows($resultente)>0){
+                              session_start();
+                              $_SESSION['username'] = $username;
+                              header("location: /ente/choose_activity_ente.php");
+                              // username found in utente
+                            } else {
                               /* Password is correct, so start a new session and
                               save the username to the session */
                               session_start();
                               $_SESSION['username'] = $username;
                               header("location: choose_activity_user.html");
+                            }
                           } else{
                               // Display an error message if password is not valid
                               $password_err = 'La password inserita non è valida.';

@@ -35,7 +35,7 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
-    <title>Visualizza Segnalazioni</title>
+    <title>Visualizza Segnalazioni da risolvere</title>
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/ionicons.min.css">
@@ -58,18 +58,18 @@
       <div class="container">
         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
           <div class="intro">
-            <h2 class="text-center">Visualizza le segnalazioni</h2>
+            <h2 class="text-center">Visualizza le segnalazioni dei cittadini da dover risolvere</h2>
           </div>
             <?php
               // preparazione della query che ricava gli id delle segnalazioni dell'utente
               $username = $_SESSION['username'];
-              $sql = "SELECT id_ticket, data, gravita, stato, id_gruppo_risoluzione FROM ticket WHERE segnalatore LIKE '$username'";
+              $sql = "SELECT id_ticket, data, gravita, stato, id_gruppo_risoluzione FROM ticket WHERE provincia LIKE '$provincia' AND tag LIKE '$tag'";
               $result = mysqli_query($link, $sql);
               $valori = mysqli_num_rows($result);
 
+
               // se la query produce righe, costruisco la tabella
               if ($valori>0) {
-
                 // stampa la tabella
                 echo "<div class=\"table-responsive\">";
                   echo "<table class=\"table table-hover \">";
@@ -79,61 +79,43 @@
                         echo "<th>Data</th>";
                         echo "<th>Gravità</th>";
                         echo "<th>Stato</th>";
+                        echo "<th>Gruppo Risol.</th>";
                       echo "</tr>";
                     echo "</thead>";
                     echo "<tbody>";
                   while ($row = mysqli_fetch_assoc($result)) {
                     // stampa delle righe della tabella con i risultati della query
-                    echo "<tr>";
+                    if($row['gravita']=="Alta"){
+                      echo "<tr class=\"table-danger\">";
+                    }elseif ($row['gravita']=="Media") {
+                      echo "<tr class=\"table-warning\">";
+                    }elseif ($row['gravita']=="Bassa") {
+                      echo "<tr class=\"table-success\">";
+                    }
                       echo "<td>".$row['id_ticket']."</td>";
                       echo "<td>".$row['data']."</td>";
                       echo "<td>".$row['gravita']."</td>";
                       echo "<td>".$row['stato']."</td>";
-                      $stato = $row['stato'];
+                      echo "<td>".$row['id_gruppo_risoluzione']."</td>";
+                      $stato = trim($row['stato']);
                       $id_ticket = $row['id_ticket'];
 
-                      // se lo stato è 'In attesa di approvazione' rende possibile eliminazione e modifica
-                      if ($stato == "In attesa di approvazione") {
-                        echo "<td><button type=\"button\" class=\"btn btn-danger btn-sm\" data-toggle=\"modal\" data-target=\"#exampleModalCenter\" onclick=\"prendi_id_da_cancellare(".$id_ticket.")\">Elimina ✖</button></td>";
-                        echo "<td><button type=\"button\" class=\"btn btn-warning btn-sm\" onclick=\"location.href='edit_ticket_ente.php?id=".$id_ticket."'\">Modifica ✏</button></td>";
-                      } else {
-                        echo "<td><button type=\"button\" class=\"btn btn-danger btn-sm\" data-toggle=\"modal\" data-target=\"#exampleModalCenter\" disabled>Elimina ✖</button></td>";
-                        echo "<td><button type=\"button\" class=\"btn btn-warning btn-sm\" onclick=\"location.href='edit_ticket_ente.php?id=".$id_ticket."'\" disabled>Modifica ✏</button></td>";
+                      if ($stato!= "Invalidato") {
+                        echo "<td><button type=\"button\" class=\"btn btn-warning btn-sm\" onclick=\"location.href='assign_team.php?id=".$id_ticket."'\">Modifica Gruppo/Visualizza ✏</button></td>";
+                      }else {
+                        echo "<td><button type=\"button\" class=\"btn btn-primary btn-sm\" onclick=\"location.href='view_ticket_ente.php?id=".$id_ticket."'\">Visualizza ➡</button></td>";
                       }
-
-                      echo "<td><button type=\"button\" class=\"btn btn-primary btn-sm\" onclick=\"location.href='view_ticket_ente.php?id=".$id_ticket."'\">Visualizza ➡</button></td>";
                     echo "</tr>";
                   }
-
                   echo "</tbody>";
                 echo "</table>";
               echo "</div>";
               } else {
                 echo "
                   <p>Spiacenti ma non hai ancora segnalazioni.</p>
-
                 ";
               }
             ?>
-            <!-- Modal di conferma eliminazione -->
-            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle">Vuoi davvero eliminare?</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body" id="modal-body">
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Chiudi</button>
-                    <button type="button" class="btn btn-danger" id="elimina-definit">Elimina definitivamente</button>
-                  </div>
-                </div>
-              </div>
-            </div>
             <div class="form-row justify-content-center">
               <div class="col-sm-4 col-lg-5">
                 <button class="btn btn-dark btn-block" type="button" onclick="location.href='choose_activity_ente.php'">Indietro</button>
@@ -145,16 +127,6 @@
           <script src="<?php __DIR__ ?>/../assets/js/jquery.min.js"></script>
           <script src="<?php __DIR__ ?>/../assets/bootstrap/js/bootstrap.min.js"></script>
           <script>
-            function prendi_id_da_cancellare(id) {
-              document.getElementById("modal-body").innerHTML = "Stai eliminando la segnalazione num "+ id +". Cosa vuoi fare?";
-              var x = document.getElementById("elimina-definit");
-              x.setAttribute("onclick", "cancella_id("+id+")");
-            }
-
-            function cancella_id(id){
-              invia_dati("https://civicsensesst.altervista.org/list_ticket_fordetails_ente.php", {"id_ticket": ""+ id +""}, "post");
-            }
-
             function invia_dati(servURL, params, method) {
               method = method || "post"; // il metodo POST è usato di default
               var form = document.createElement("form");

@@ -28,25 +28,23 @@
   $gravita = $row['gravita'];
   $segnalatore_reale = $row['segnalatore'];
 
-  function utente_impostore($segnalatore_reale_prova){
-    $sql1 = "SELECT username FROM ente";
-    $result1 = mysqli_query($link, $sql1);
-    $row1 = mysqli_fetch_assoc($result1);
-
-    foreach ($variable as $row1) {
-      if($variabile['username']==$_SESSION['username']){
-        $trovato = 1;
-      }
-    }
-    if($trovato==1){
-      return false;
-    } else {
-      mysqli_close($link);
-
-      header("Refresh:3; URL=".home_url()."choose_activity_user.html");
-      return true;
-    }
-  }
+  // function utente_impostore($segnalatore_reale_prova){
+  //   $sql1 = "SELECT username FROM ente";
+  //   $result1 = mysqli_query($link, $sql1);
+  //   $row1 = mysqli_fetch_assoc($result1);
+  //
+  //   foreach ($variable as $row1) {
+  //     if($variabile['username']==$_SESSION['username']){
+  //       $trovato = 1;
+  //     }
+  //   }
+  //   if($trovato==1){
+  //     return false;
+  //   } else {
+  //     mysqli_close($link);
+  //     return true;
+  //   }
+  // }
 
   if($_SERVER["REQUEST_METHOD"] == "POST"){
 
@@ -94,7 +92,7 @@
       $result = mysqli_query($link, $sql);
     }
 
-    header("location: "list_ticket_fordetails_ente.php");
+    header("location: list_ticket_fordetails_ente.php");
   }
 
 ?>
@@ -124,14 +122,14 @@
   </head>
 <body style = "background-color:#eef4f7">
     <div class="form-row justify-content-center">
-      <?php
-        if(utente_impostore($segnalatore_reale)==true){
-          echo "<h1>Accesso vietato</h1>
-          <h5>Non sembra che abbia le autorizzazioni per accedere a questa pagina</h5>
-          <h4>Sarai reindirizzato alla pagina di login</h4>";
-          die();
-        }
-      ?>
+      <!-- <?php
+        // if(utente_impostore($segnalatore_reale)==true){
+        //   echo "<h1>Accesso vietato</h1>
+        //   <h5>Non sembra che abbia le autorizzazioni per accedere a questa pagina</h5>
+        //   <h4>Sarai reindirizzato alla pagina di login</h4>";
+        //   die();
+        // }
+      ?> -->
     </div>
     <div class="features-boxed">
       <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
@@ -145,8 +143,8 @@
                     <p class="text-center">Modifica una segnalazione per disservizio</p>
                   </div>
                 </div>
-                <label class="col-form-label">Descrizione</font>
-                <textarea class="form-control" readonly maxlength="400" name="descrizione" id="descrizione" type="text" rows="4" onload="count(this, 400, 'descrizione')" onkeyup="count(this, 400, 'descrizione')"><?php echo $descrizione; ?></textarea>
+                <label class="col-form-label">Descrizione <font color="red">*</font></label>
+                <textarea class="form-control" maxlength="400" name="descrizione" id="descrizione" type="text" rows="4" onload="count(this, 400, 'descrizione')" onkeyup="count(this, 400, 'descrizione')"><?php echo $descrizione; ?></textarea>
               </div>
             </div>
 
@@ -278,10 +276,10 @@
         </div>
       </form>
     </div>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/Contact-FormModal-Contact-Form-with-Google-Map.js"></script>
-    <script src="assets/js/Sidebar-Menu.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/js/jquery.min.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/js/Contact-FormModal-Contact-Form-with-Google-Map.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/js/Sidebar-Menu.js"></script>
     <script>
       function count(field,maxlength,id){
         var totalLength = field.value.length;

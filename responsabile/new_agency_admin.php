@@ -7,12 +7,12 @@ session_start();
 
 // If session variable is not set it will redirect to login page
 if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
-  header("location: login_admin.php");
+  header("location: https://civicsensesst.altervista.org/login_admin.php");
   exit;
 }
 
 $username = $_SESSION['username'];
-$username_ente = $nome = $tag = $citta = $provincia = "";
+$username_ente = $nome = $tag = $citta = $provincia = $ente_err = "";
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
  
@@ -22,22 +22,79 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
   $citta = trim($_POST["citta"]);
   $provincia = trim($_POST['provincia']);
 
-    $sql = "INSERT IGNORE INTO tag (nome) VALUES ('$tag')";
-      if (mysqli_query($link, $sql)) {    
-        $sql = "INSERT INTO ente
-        (username, nome, provincia, citta, tag, username_responsabile)
-        VALUES
-        ('$username_ente', '$nome', $provincia','$citta','$tag','$username')";
-        if (mysqli_query($link, $sql)) {
-          header("location: view_agency_admin.php?id=".$username_ente);
-        } else {
-          echo "Error: " . $sql . "<br>" . mysqli_error($link);
-        }
-      } else {
-        echo "Error: " . $sql . "<br>" . mysqli_error($link);
-      }  
+  $sql = "SELECT nome FROM tag WHERE nome = '$tag'";
+  if (mysqli_query($link, $sql)) {
+              $result = mysqli_query($link, $sql);
+              $valori = mysqli_num_rows($result);
+              if ($valori == 0) {
+                // Il tag non esiste, quindi può generare l'ente e il tag
+                $sql = "INSERT IGNORE INTO tag (nome) VALUES ('$tag')";
+                  if (mysqli_query($link, $sql)) {  
+                    $sql = "INSERT INTO segnalatore (username) VALUES ('$username_ente')";
+                      if (mysqli_query($link, $sql)) {    
+                        $sql = "INSERT INTO ente
+                        (username, nome, provincia, citta, tag, username_responsabile)
+                        VALUES
+                        ('$username_ente', '$nome', '$provincia','$citta','$tag','$username')";
+                        if (mysqli_query($link, $sql)) {
+                          header("location: view_agency_admin.php?id=".$username_ente);
+                        } else {
+                          echo "Error: " . $sql . "<br>" . mysqli_error($link);
+                        }
+                      } else {
+                        echo "Error: " . $sql . "<br>" . mysqli_error($link);
+                      }  
+                      } else {
+                    echo "Error: " . $sql . "<br>" . mysqli_error($link);
+                  } 
+              } else {
+                // Controlla se esiste un ente con la stessa combinazione di tag e provincia
+                $sql = "SELECT * FROM ente WHERE tag = '$tag' AND provincia = '$provincia'";
+                if (mysqli_query($link, $sql)) {
+                  $result = mysqli_query($link, $sql);
+                  $valori = mysqli_num_rows($result);
+                  if ($valori > 0) {
+                    //Segnala che l'ente esiste già
+                    $ente_err = "Impossibile creare l'ente. Esiste già un ente con la stessa combinazione di provincia e tag.";
+                   }
+                   else {
+                    // Non esiste un ente con la stessa combinazione di tag e provincia, quindi genera l'ente
+                    $sql = "INSERT IGNORE INTO tag (nome) VALUES ('$tag')";
+                      if (mysqli_query($link, $sql)) {  
+                        $sql = "INSERT INTO segnalatore (username) VALUES ('$username_ente')";
+                          if (mysqli_query($link, $sql)) {    
+                            $sql = "INSERT INTO ente
+                            (username, nome, provincia, citta, tag, username_responsabile)
+                            VALUES
+                            ('$username_ente', '$nome', '$provincia','$citta','$tag','$username')";
+                            if (mysqli_query($link, $sql)) {
+                              header("location: view_agency_admin.php?id=".$username_ente);
+                            } else {
+                              echo "Error: " . $sql . "<br>" . mysqli_error($link);
+                            }
+                          } else {
+                            echo "Error: " . $sql . "<br>" . mysqli_error($link);
+                          }  
+                          } else {
+                        echo "Error: " . $sql . "<br>" . mysqli_error($link);
+                      } 
+                  }
+
+                } else {
+                  echo "Error: " . $sql . "<br>" . mysqli_error($link);
+                }
+              }
+
+            } else {
+                  echo "Error: " . $sql . "<br>" . mysqli_error($link);
+                }
+
+
+    
+
       
   mysqli_close($link);
+
 }
 ?>
 
@@ -67,7 +124,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
   <body>
     <div class="features-boxed">
       <div class="container">
-        <form>
+        <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
           <div class="form-row">
             <div class="col-sm-12 col-lg-11 mx-auto">
               <div class="form-group">
@@ -83,7 +140,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
           </div>
           <div class="form-row justify-content-center">
             <div class="col-sm-6 col-lg-5">
-              <div class="form-group"><label>Username</label><input class="form-control" name ="username_ente" type="text"></div>
+              <div class="form-group"><label>Username</label><input class="form-control" name ="username_ente" type="text" required></div>
             </div>
             <div class="col-sm-6 col-lg-3">
               <div class="form-group"><label>Tag</label><input class="form-control" type="text" name="tag" required></div>
@@ -112,46 +169,34 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                   type="text" name="citta" required></div>
             </div>
             <div class="col-sm-3">
-              <div class="form-group"><label>Provincia</label><input class="form-control"
-
-                  type="text" nome="provincia" required></div>
+              <div class="form-group"><label>Provincia</label>
+                <select class="custom-select" name="provincia" required>
+                  <option value=""><?php echo "";?></option>
+                    <?php
+                      $filepath = "http://www.mandile.it/wp-content/uploads/province-sigle.csv";
+                      $array_csv = csvToArray($filepath);
+                      foreach($array_csv as $numero_riga => $valori){
+                       $valore_prima_colonna = $valori[0];
+                       $valore_seconda_colonna = $valori[1];
+                       echo "<option value=\"".$valore_seconda_colonna."\">".$valore_seconda_colonna."</option>";
+                       }
+                    ?>
+                </select>
+               <span style="color:#FF2D00" class="help-block"><?php echo $provincia_err;?></span>
+            </div>
+            <span class="help-block"><?php echo $ente_err; ?></span>
             </div>
           </div>
           <br>
-          <div class="form-row">
-            <div class="col-sm-2">
-              <div class="form-group"><label>Label</label><input class="form-control"
-
-                  type="text"></div>
+          
+          <div class="form-row justify-content-center">
+            <div class="col-sm-4 col-lg-3">
+              <button class="btn btn-success btn-block" id="creaticket" type="submit">Crea ente</button>
             </div>
-            <div class="col-sm-2">
-              <div class="form-group"><label>Label</label><input class="form-control"
-
-                  type="text"></div>
-            </div>
-            <div class="col-sm-2">
-              <div class="form-group"><label>Label</label><input class="form-control"
-
-                  type="text"></div>
-            </div>
-            <div class="col-sm-2">
-              <div class="form-group"><label>Label</label><input class="form-control"
-
-                  type="text"></div>
-            </div>
-            <div class="col-sm-2">
-              <div class="form-group"><label>Label</label><input class="form-control"
-
-                  type="text"></div>
-            </div>
-            <div class="col-sm-2">
-              <div class="form-group"><label>Label</label><input class="form-control"
-
-                  type="text"></div>
+            <div class="col-sm-4 col-lg-3">
+              <button onclick="location.href='choose_activity_admin.html'" type="button" class="btn btn-danger btn-block">Annulla</button>
             </div>
           </div>
-          <button class="btn btn-success btn-block" type="submit">Crea
-            ente</button><button class="btn btn-danger btn-block" type="submit">Annulla</button>
           <br>
           <br>
         </form>

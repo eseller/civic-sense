@@ -1,24 +1,19 @@
 <?php
   // Include config file
-  require_once 'config.php';
+  require_once __DIR__.'/../config.php';
 
   // Initialize the session
   session_start();
 
   // If session variable is not set it will redirect to login page
   if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
-    header("location: login_user.php");
+    header("location: ".home_url()."login_user.php");
     exit;
   }
 
-  // Start XML file, create parent node
-  $dom = new DOMDocument("1.0");
-  $node = $dom->createElement("markers");
-  $parnode = $dom->appendChild($node);
-
   $id_ticket = $_GET['id'];
 
-  $sql = "SELECT * FROM ticket WHERE id_ticket=$id_ticket";
+  $sql = "SELECT * FROM ticket WHERE id_ticket = $id_ticket";
   $result = mysqli_query($link, $sql);
   $row = mysqli_fetch_assoc($result);
 
@@ -31,9 +26,9 @@
   $indirizzo = $row['indirizzo'];
   $tag = $row['tag'];
   $gravita = $row['gravita'];
+  $segnalatore_reale = $row['segnalatore'];
   $stato = $row['stato'];
   $report = $row['report'];
-
 
 ?>
 
@@ -42,24 +37,23 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizza Ticket</title>
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
-    <link rel="stylesheet" href="assets/fonts/ionicons.min.css">
-    <link rel="stylesheet" href="assets/css/Article-List.css">
-    <link rel="stylesheet" href="assets/css/Contact-FormModal-Contact-Form-with-Google-Map.css">
-    <link rel="stylesheet" href="assets/css/dh-row-text-image-right.css">
-    <link rel="stylesheet" href="assets/css/Features-Boxed.css">
-    <link rel="stylesheet" href="assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="assets/css/Forum---Thread-listing1.css">
-    <link rel="stylesheet" href="assets/css/Login-Form-Clean.css">
-    <link rel="stylesheet" href="assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="assets/css/Pretty-Registration-Form-1.css">
-    <link rel="stylesheet" href="assets/css/Login-Form-Dark.css">
-    <link rel="stylesheet" href="assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="assets/css/Sidebar-Menu1.css">
-    <link rel="stylesheet" href="assets/css/styles.css">
-    <link rel="stylesheet" href="css/responsive.css">
+    <title>Assegna gruppo di risoluzione</title>
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/ionicons.min.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Article-List.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Contact-FormModal-Contact-Form-with-Google-Map.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing1.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Clean.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form-1.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Dark.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu1.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
     <style>
        /* Set the size of the div element that contains the map */
       #map {
@@ -133,7 +127,7 @@
               <div class="col-sm-4 col-lg-2">
                 <div class="form-group">
                   <label>Latitudine</label>
-                  <input class="form-control" readonly="readonly" type="text" id="latitudine" value="<?php echo $latitudine ?>">
+                  <input class="form-control" readonly="readonly" type="text" id="latitudine" value="<?php echo $latitudine; ?>">
                 </div>
               </div>
 
@@ -141,7 +135,7 @@
               <div class="col-sm-4 col-lg-2">
                 <div class="form-group">
                   <label>Longitudine</label>
-                  <input class="form-control" readonly="readonly" type="text" id="longitudine" value="<?php echo $longitudine ?>">
+                  <input class="form-control" readonly="readonly" type="text" id="longitudine" value="<?php echo $longitudine; ?>">
                 </div>
               </div>
             </div>
@@ -179,13 +173,19 @@
 
             <br>
             <br>
-              <button class="btn btn-danger btn-block" type="button" onclick="location.href='list_ticket_fordetails_user.php'">Indietro</button>
+              <button class="btn btn-danger btn-block" type="button" onclick="location.href='list_ticket_fordetails_ente.php'">Indietro</button>
             <br>
             <br>
         </div>
     </div>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/js/jquery.min.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/bootstrap/js/bootstrap.min.js"></script>
+    <script>
+      function count(field,maxlength,id){
+        var totalLength = field.value.length;
+        document.getElementById("caratteri_desc_rimanenti").innerHTML = maxlength-totalLength + " caratteri rimanenti";
+      }
+    </script>
     <script>
     // Initialize and add the map
     function initMap() {
@@ -201,7 +201,7 @@
       var uluru = {lat: lati, lng: longi};
 
       // The map, centered at Uluru
-      var map = new google.maps.Map(document.getElementById('map'), {zoom: 15, center: uluru});
+      var map = new google.maps.Map(document.getElementById('map'), {zoom: 17, center: uluru});
       // The marker, positioned at Uluru
       var marker = new google.maps.Marker({position: uluru, map: map});
 
@@ -210,7 +210,7 @@
       var id = document.getElementById("id_ticket").value;
 
        // Change this depending on the name of your PHP or XML file
-       downloadUrl('gen_xml_map_user.php?id='+id, function(data) {
+       downloadUrl('xml/gen_xml_map_ente.php?id='+id, function(data) {
          var xml = data.responseXML;
          var markers = xml.documentElement.getElementsByTagName('marker');
          Array.prototype.forEach.call(markers, function(markerElem) {
@@ -269,7 +269,7 @@
     * The callback parameter executes the initMap() function
     -->
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2-9hld_I3B-CWHMUKzRmkUDr75_p1VCI&callback=initMap" type="text/javascript"></script>
-    <script src="assets/js/Contact-FormModal-Contact-Form-with-Google-Map.js"></script>
-    <script src="assets/js/Sidebar-Menu.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/js/Contact-FormModal-Contact-Form-with-Google-Map.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/js/Sidebar-Menu.js"></script>
   </body>
 </html>

@@ -22,13 +22,23 @@ $row = mysqli_fetch_assoc($result);
 $id_ticket = $row['MAX(id_ticket)'];
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
+  $id_ticket++;
   // Check if descrizione is empty
   if(empty(trim($_POST["descrizione"]))){
       $descrizione_err = 'Inserire una descrizione.';
   } else{
       $descrizione = trim($_POST["descrizione"]);
   }
-  $pic1 = "DebugImmagine.foto";
+  // Directory immagini
+  $target_dir = "./immagini_ticket/";
+  // Salvataggio nomi immagini su variabili
+  $pic1 = basename($_FILES["pic1"]["name"]);
+  $path1 = $target_dir.$id_ticket."_1_".$pic1;
+  move_uploaded_file($_FILES['pic1']['tmp_name'],$path1);
+  $pic2 = basename($_FILES["pic2"]["name"]);
+  $path2 = $target_dir.$id_ticket."_2_".$pic2;
+  move_uploaded_file($_FILES['pic2']['tmp_name'],$path2);
+  // Salvataggio variabili per INSERT
   $indirizzo = trim($_POST['indirizzo']);
   $tag = trim($_POST["tag"]);
   $gravitabox = trim($_POST["gravitabox"]);
@@ -37,16 +47,18 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
   $provincia = trim($_POST['provincia']);
   $latitudine = floatval($_POST['latitudine']);
   $longitudine = floatval($_POST['longitudine']);
-    $sql = "INSERT INTO ticket
-    (descrizione,provincia,data,latitudine,longitudine,citta,
-    indirizzo,tag,gravita,segnalatore,stato,immagine1)
-    VALUES
-    ('$descrizione','$provincia','$data','$latitudine','$longitudine','$citta','$indirizzo','$tag','$gravitabox',
-    '$username','In attesa di approvazione','$pic1')";
-    if (mysqli_query($link, $sql)) {
-    header("location: view_ticket_user.php?id=".$id_ticket);
+  // Inserimento ticket
+  $sql = "INSERT INTO ticket
+  (descrizione,provincia,data,latitudine,longitudine,citta,
+  indirizzo,tag,gravita,segnalatore,stato,immagine1,immagine2)
+  VALUES
+  ('$descrizione','$provincia','$data','$latitudine','$longitudine','$citta','$indirizzo','$tag','$gravitabox',
+  '$username','In attesa di approvazione','$path1','$path2')";
+  // Gestione errore
+  if (mysqli_query($link, $sql)) {
+      header("location: view_ticket_user.php?id=".$id_ticket);
   } else {
-    echo "Error: " . $sql . "<br>" . mysqli_error($link);
+      echo "Error: " . $sql . "<br>" . mysqli_error($link);
   }
   mysqli_close($link);
 }
@@ -78,14 +90,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
   <body onload="showdate()" style = "background-color:#eef4f7">
     <div class="features-boxed">
       <div class="container">
-        <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+        <form method="post" enctype="multipart/form-data" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
           <div class="form-row">
             <div class="col-sm-12 col-lg-11 mx-auto">
               <div class="form-group <?php echo (!empty($descrizione_err)) ? 'has-error' : ''; ?>">
                 <div class="intro">
                   <h2 class="text-center">Nuovo Ticket</h2>
-                  <p class="text-center">Crea una nuova segnalazione per un
-                    disservizio</p>
+                  <p class="text-center">Crea una nuova segnalazione per un disservizio</p>
                 </div>
               </div>
               <label class="col-form-label">Descrizione <font color="red">*</font></label>
@@ -127,7 +138,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                   readonly="readonly" name="id_ticket" placeholder="<?php echo $id_ticket+1; ?>" type="text"></div>
             </div>
 
-            <div class="col-sm-3  col-lg-2">
+            <div class="col-sm-3  col-lg-3">
               <div class="form-group"><label>Data</label><input name="data" class="form-control"
                   readonly="readonly" id="date"></div>
             </div>
@@ -172,10 +183,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
           <br>
           <div class="form-row justify-content-center">
             <div class="col-sm-2 col-lg-3">
-              <input type="file" name="myFile1" id="pic1">
+                <input type="file" name="pic1" id="pic1">
+
             </div>
             <div class="col-sm-2 col-lg-3">
-              <input type="file" name="myFile2" id="pic2">
+              <input type="file" name="pic2" id="pic2">
             </div>
           </div>
           <div class="form-row">
@@ -223,6 +235,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <script src="assets/js/Contact-FormModal-Contact-Form-with-Google-Map.js"></script>
     <script src="assets/js/Sidebar-Menu.js"></script>
     <script>
+      // Enable button
       function AttivaSubmit(){
         document.getElementById('creaticket').removeAttribute('disabled');
       }
@@ -232,7 +245,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     var y = document.getElementById("longitudine");
     var z = document.getElementById("ottienigeolocalizzazione");
     var zz = document.getElementById("scrittainterna");
-
+    // Geolocalizzazione
     function getLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition);
@@ -240,6 +253,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         zz.innerHTML = "Geolocation is not supported by this browser.";
     }
     }
+    // Coordinate
     function showPosition(position) {
         latitudine.value = position.coords.latitude;
         longitudine.value = position.coords.longitude;
@@ -250,6 +264,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     }
     </script>
     <script>
+      // Mostra Data
       function showdate(){
         var today = new Date();
         var dd = today.getDate();

@@ -28,14 +28,12 @@
   $gravita = $row['gravita'];
   $segnalatore_reale = $row['segnalatore'];
 
-  function utente_impostore($segnalatore_reale_prova){
+  function utente_impostore($segnalatore_reale){
     if($_SERVER["REQUEST_METHOD"] == "GET"){
 
-      if ($segnalatore_reale_prova != $_SESSION['username']) {
+      if ($segnalatore_reale != $_SESSION['username']) {
         // Close connection
         mysqli_close($link);
-
-        header("Refresh:3; URL= list_ticket_fordetails_user.php");
         return true;
       }else {
         return false;
@@ -118,18 +116,24 @@
     <link rel="stylesheet" href="assets/css/styles.css">
   </head>
 <body style = "background-color:#eef4f7">
-    <div class="form-row justify-content-center">
-      <?php
-        if(utente_impostore($segnalatore_reale)==true){
-          echo "<h1>Non ci risulta essere la tua segnalazione!</h1>
-          <h4>Sarai reindirizzato alle segnalazioni create da te.</h4>";
-          die();
-        }
-      ?>
-    </div>
     <div class="features-boxed">
       <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
         <div class="container">
+
+          <!-- CONTROLLO SE L'UTENTE E' ABILITATO AD ACCEDERE ALLA PAGINA -->
+          <!-- <?php
+            // if(utente_impostore($segnalatore_reale)==true){
+            //   echo "
+            //     <h1>Non hai formulato una richiesta valida</h1>
+            //     </div>
+            //     <div class=\"form-row justify-content-center\">
+            //       <div class=\"col-sm-4 col-lg-6\">
+            //         <button class=\"btn btn-danger btn-block\" type=\"button\" onclick=\"javascript:history.go(-1)\">Torna alla pagina precedente</button>
+            //       </div>
+            //     </div>";
+            //   die();
+            // }
+          ?> -->
             <!-- contentitore titolo, sottotitolo e descrizione -->
             <div class="form-row">
               <div class="col-sm-12 col-lg-11 mx-auto">
@@ -143,13 +147,15 @@
                 <textarea class="form-control" maxlength="400" name="descrizione" id="descrizione" type="text" rows="4" onload="count(this, 400, 'descrizione')" onkeyup="count(this, 400, 'descrizione')" required><?php echo $descrizione; ?></textarea>
               </div>
             </div>
+          <!-- </div> -->
 
             <!-- contenitore per indirizzo, tag e gravità -->
             <div class="form-row justify-content-center">
 
               <!-- colonna indirizzo -->
               <div class="col-sm-12 col-lg-6">
-                <div class="form-group"><label>Indirizzo</label>
+                <div class="form-group">
+                  <label>Indirizzo</label>
                   <input name="indirizzo" maxlength="45" class="form-control" type="text" value="<?php echo $indirizzo; ?>"></div>
               </div>
 
@@ -208,7 +214,6 @@
                           $array_csv = csvToArray($filepath);
 
                           foreach($array_csv as $numero_riga => $valori){
-                           $valore_prima_colonna = $valori[0];
                            $valore_seconda_colonna = $valori[1];
 
                            echo "<option value=\"".$valore_seconda_colonna."\"";
