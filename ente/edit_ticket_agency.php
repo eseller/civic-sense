@@ -92,7 +92,7 @@
       $result = mysqli_query($link, $sql);
     }
 
-    header("location: list_ticket_fordetails_ente.php");
+    header("location: list_ticket_fordetails_agency.php");
   }
 
 ?>
@@ -268,7 +268,7 @@
                 <button class="btn btn-success btn-block" type="submit">Modifica ticket</button>
               </div>
               <div class="col-sm-4 col-lg-3">
-                <button class="btn btn-danger btn-block" type="button" onclick="location.href='list_ticket_fordetails_ente.php'">Annulla</button>
+                <button class="btn btn-danger btn-block" type="button" onclick="location.href='list_ticket_fordetails_agency.php'">Annulla</button>
               </div>
             </div>
             <br>

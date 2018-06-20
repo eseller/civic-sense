@@ -7,47 +7,23 @@ session_start();
 
 // If session variable is not set it will redirect to login page
 if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
-  header("location: https://civicsensesst.altervista.org/login_admin.php");
+  header("location: ".home_url()."login_user.php");
   exit;
 }
-
-$username_ente = $_GET['id'];
-
-$sql = "SELECT * FROM ente WHERE username = '$username_ente'";
-$result = mysqli_query($link, $sql);
+// Id gruppo
+$id_gruppo_risoluzione = $_GET['id'];
+// Select info gruppo
+$sql = "SELECT * FROM partecipazione WHERE id_gruppo_risoluzione = $id_gruppo_risoluzione";
+$result = mysqli_query($link,$sql);
 $row = mysqli_fetch_assoc($result);
-
-$username_ente = $row['username'];
-$oldusername_ente = $row['username'];
-$nome = $row['nome'];
-$tag = $row['tag'];
-$oldtag = $row['tag'];
-$citta = $row['citta'];
-$provincia = $row['provincia'];
-$responsabile_reale = $row['username_responsabile'];
-
-  function utente_impostore($responsabile_reale){
-    if($_SERVER["REQUEST_METHOD"] == "GET"){
-
-      if ($responsabile_reale != $_SESSION['username']) {
-        // Close connection
-        mysqli_close($link);
-        return true;
-      }else {
-        return false;
-      }
-    }
-  }
-
-$username = $_SESSION['username'];
+$dipendente = $row['username_dipendente'];
 ?>
-
 <!DOCTYPE html>
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Civic Sense</title>
+    <title>Gruppo di Risoluzione</title>
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/ionicons.min.css">
@@ -68,63 +44,49 @@ $username = $_SESSION['username'];
   <body>
     <div class="features-boxed">
       <div class="container">
-          <!-- CONTROLLO SE L'UTENTE E' ABILITATO AD ACCEDERE ALLA PAGINA -->
-          <?php
-            if(utente_impostore($responsabile_reale)==true){
-              echo "
-                <h1>Non hai formulato una richiesta valida</h1>
-                </div>
-                <div class=\"form-row justify-content-center\">
-                  <div class=\"col-sm-4 col-lg-6\">
-                    <button class=\"btn btn-danger btn-block\" type=\"button\" onclick=\"javascript:history.go(-1)\">Torna alla pagina precedente</button>
-                  </div>
-                </div>";
-              die();
-            }
-          ?>
-
         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
           <div class="form-row">
             <div class="col-sm-12 col-lg-11 mx-auto">
               <div class="form-group">
                 <div class="intro">
-                  <h2 class="text-center">Visualizza Ente</h2>
-                  <p class="text-center">Visualizza le informazioni dell'ente</p>
+                  <h2 class="text-center">Nuovo Gruppo</h2>
+                  <p class="text-center">Registra un nuovo gruppo di risoluzione</p>
                 </div>
               </div>
             </div>
           </div>
-          <div class="form-row justify-content">
-            <label class="col-form-label">Nome</label><input class="form-control" name="nome" type="text" value="<?php echo $nome ?>" required readonly>
-          </div>
           <div class="form-row justify-content-center">
-            <div class="col-sm-6 col-lg-5">
-              <div class="form-group"><label>Username</label><input class="form-control" name ="username_ente" type="text" value="<?php echo $username_ente ?>" required readonly></div>
-            </div>
-            <div class="col-sm-6 col-lg-3">
-              <div class="form-group"><label>Tag</label><input class="form-control" type="text" name="tag" value="<?php echo $tag ?>" required readonly></div>
-            </div>
-          </div>
-          <div class="form-row justify-content-center"><br>
-            <div class="col-sm-3">
-              <div class="form-group"><label>Città</label><input class="form-control"
-
-                  type="text" name="citta" value="<?php echo $citta ?>" required readonly></div>
-            </div>
-            <div class="col-sm-3">
-                <div class="dropdown">
-                <div class="select-group">
-                  <label>Provincia</label>
-                  <input readonly  name="provincia" class="form-control" type="text" value="<?php echo $provincia; ?>">
-                </div>
-                </div>
-            </div>
+            <div class="form-group"><label>ID Gruppo Risoluzione</label>
+              <input disabled="true" class="form-control" readonly="readonly" name="id_gruppo_risoluzione" 
+              placeholder="<?php echo $id_gruppo_risoluzione; ?>" type="text"></div>
           </div>
           <br>
-          
+          <br>
+          <div class="form-row justify-content-center">
+            <div class="form-row">
+              <label><h5><b>Inserisci i partecipanti al gruppo</b></h5></label>
+            </div>
+          </div>
+          <div class="form-row justify-content-center">
+            <span style="color:red" class="help-block"><?php echo $at_least_err ?></span>
+            <span style="color:red" class="help-block"><?php echo $exist_err ?></span>
+            <span style="color:red" class="help-block"><?php echo $available_err ?></span>            
+          </div>
+          <br>
+          <div class="form-row justify-content-center">
+            <div class="col-sm-3">
+              <div class="form-group"><label>Dipendente #1</label><input class="form-control"
+              method="post" name="dip1" value="<?php echo $dipendente; ?>" type="text">
+            </div>
+            </div>
+          <br>
           <div class="form-row justify-content-center">
             <div class="col-sm-4 col-lg-3">
-              <button onclick="location.href='list_agency_fordetails_admin.php'" type="button" class="btn btn-danger btn-block">Indietro</button>
+              <button class="btn btn-success btn-block" id="creagruppo" type="submit">Crea Gruppo</button>
+            </div>
+            <div class="col-sm-4 col-lg-3">
+              <button onclick="location.href='choose_activity_ente.php'" 
+              type="button" class="btn btn-danger btn-block">Annulla</button>
             </div>
           </div>
           <br>

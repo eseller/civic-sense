@@ -1,88 +1,126 @@
 <?php
-  // Include config file
-  require_once 'config.php';
+	// Include config file
+	require_once 'config.php';
 
-  // Define variables and initialize with empty values
-  $username = $password = "";
-  $username_err = $password_err = "";
+	// Define variables and initialize with empty values
+	$username = $password = "";
+	$username_err = $password_err = "";
 
-  // Processing form data when form is submitted
-  if($_SERVER["REQUEST_METHOD"] == "POST"){
+	// Processing form data when form is submitted
+	if($_SERVER["REQUEST_METHOD"] == "POST"){
 
-      // Check if username is empty
-      if(empty(trim($_POST["username"]))){
-          $username_err = 'Inserire un username.';
-      } else{
-          $username = trim($_POST["username"]);
-      }
+    	// Check if username is empty
+    	if(empty(trim($_POST["username"]))){
+        	$username_err = 'Inserire un username.';
+      	} else {
+        	$username = trim($_POST["username"]);
+      	}
 
-      // Check if password is empty
-      if(empty(trim($_POST['password']))){
-          $password_err = 'Inserire la password.';
-      } else{
-          $password = trim($_POST['password']);
-      }
+    	// Check if password is empty
+    	if(empty(trim($_POST['password']))){
+        	$password_err = 'Inserire la password.';
+      	} else {
+        	$password = trim($_POST['password']);
+      	}
 
-      // Validate credentials
-      if(empty($username_err) && empty($password_err)){
-          // Prepare a select statement
-          $sql = "SELECT username, password FROM segnalatore WHERE username = ?";
+    	// Validate credentials
+    	if(empty($username_err) && empty($password_err)){
+        	// Prepare a select statement
+         	$sql = "SELECT username, password FROM segnalatore WHERE username = ?";
 
-          if($stmt = mysqli_prepare($link, $sql)){
-              // Bind variables to the prepared statement as parameters
-              mysqli_stmt_bind_param($stmt, "s", $param_username);
+          	if($stmt = mysqli_prepare($link, $sql)){
+            	// Bind variables to the prepared statement as parameters
+            	mysqli_stmt_bind_param($stmt, "s", $param_username);
 
-              // Set parameters
-              $param_username = $username;
+            	// Set parameters
+            	$param_username = $username;
 
-              // Attempt to execute the prepared statement
-              if(mysqli_stmt_execute($stmt)){
-                  // Store result
-                  mysqli_stmt_store_result($stmt);
+            	// Attempt to execute the prepared statement
+            	if(mysqli_stmt_execute($stmt)){
+                	// Store result
+                	mysqli_stmt_store_result($stmt);
 
-                  // Check if username exists, if yes then verify password
-                  if(mysqli_stmt_num_rows($stmt) == 1){
-                      // Bind result variables
-                      mysqli_stmt_bind_result($stmt, $username, $hashed_password);
-                      if(mysqli_stmt_fetch($stmt)){
-                          if(password_verify($password, $hashed_password)){
-                            // Prepare query to check the right table
-                            $sqlente = "SELECT username FROM ente WHERE username ='$username'";
-                            $resultente = mysqli_query($link,$sqlente);
-                            // If result > 0 username found in ente
-                            if(mysqli_num_rows($resultente)>0){
-                              session_start();
-                              $_SESSION['username'] = $username;
-                              header("location: /ente/choose_activity_ente.php");
-                              // username found in utente
-                            } else {
-                              /* Password is correct, so start a new session and
-                              save the username to the session */
-                              session_start();
-                              $_SESSION['username'] = $username;
-                              header("location: choose_activity_user.html");
-                            }
-                          } else{
-                              // Display an error message if password is not valid
-                              $password_err = 'La password inserita non è valida.';
-                          }
-                      }
-                  } else{
-                      // Display an error message if username doesn't exist
-                      $username_err = 'Nessun account trovato con questa username.';
-                  }
-              } else{
-                  echo "Errore nella validazione delle credenziali.";
-              }
-          }
+                	// Check if username exists, if yes then verify password
+                	if(mysqli_stmt_num_rows($stmt) == 1){
+                    	// Bind result variables
+                    	mysqli_stmt_bind_result($stmt, $username, $hashed_password);
+                    	if(mysqli_stmt_fetch($stmt)){
+                        	if(password_verify($password, $hashed_password)){
+                            	// Prepare query to check the right table
+                            	$sqlente = "SELECT username FROM ente WHERE username ='$username'";
+                            	$resultente = mysqli_query($link,$sqlente);
+                            	// If result > 0 username found in ente
+                            	if(mysqli_num_rows($resultente)>0){
+                            		//Ente
+                              		session_start();
+                              		$_SESSION['username'] = $username;
+                              		header("location: /ente/choose_activity_agency.php");
+                              		// username found in utente
+                            	} else {
+                            		//Utente
+                              		/* Password is correct, so start a new session and
+                              		save the username to the session */
+                              		session_start();
+                              		$_SESSION['username'] = $username;
+                              		header("location: choose_activity_user.html");
+                            	}
+	                        } else{
+                            	// Display an error message if password is not valid
+                            	$password_err = 'La password inserita non è valida.';
+                          	}
+                      	}
+                	} else {
+                    // Controlla se è un dipendente
+	               		// Prepare a select statement
+                  		$sql = "SELECT username, password FROM dipendente WHERE username = ?";
+	                  	if($stmt = mysqli_prepare($link, $sql)){
+                  	    	// Bind variables to the prepared statement as parameters
+                  	    	mysqli_stmt_bind_param($stmt, "s", $param_username);
 
-          // Close statement
-          mysqli_stmt_close($stmt);
-      }
+                  	    	// Set parameters
+                  	    	$param_username = $username;
+
+                  	    	// Attempt to execute the prepared statement
+                  	    	if(mysqli_stmt_execute($stmt)){
+                  	        	// Store result
+                  	        	mysqli_stmt_store_result($stmt);
+
+                  	        	// Check if username exists, if yes then verify password
+                  	        	if(mysqli_stmt_num_rows($stmt) == 1){
+                                  // Dipendente
+                  	            	// Bind result variables
+                  	            	mysqli_stmt_bind_result($stmt, $username, $hashed_password);
+                  	            	if(mysqli_stmt_fetch($stmt)){
+                  	                	if(password_verify($password, $hashed_password)){
+                  	                  		session_start();
+                  	                  		$_SESSION['username'] = $username;
+                  	                  		header("location: /dipendente/list_ticket_fordetails_employee.php");
+                  	                  	} else {
+                  	                  		// Display an error message if password is not valid
+                  	                  		$password_err = 'La password inserita non è valida.';
+                  	                  	}
+                  	            	}
+                  	          	} else {
+                  	          		// Display an error message if username doesn't exist
+                  	          		$username_err = 'Nessun account trovato con questo username.';
+                  	         	}
+                  	        } else {
+                  	      		echo "Errore nella validazione delle credenziali.";
+                  	        }
+                  	    }
+                  	}
+              	} else {
+         		  echo "Errore nella validazione delle credenziali.";
+          		}
+         	}
+
+        	// Close statement
+        	mysqli_stmt_close($stmt);
+      	}
 
       // Close connection
       mysqli_close($link);
-  }
+  	}
 ?>
 
 <!DOCTYPE html>

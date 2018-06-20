@@ -4,13 +4,13 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Civic Sense</title>
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
-    <link rel="stylesheet" href="assets/fonts/ionicons.min.css">
-    <link rel="stylesheet" href="assets/css/Contact-FormModal-Contact-Form-with-Google-Map.css">
-    <link rel="stylesheet" href="assets/css/dh-row-text-image-right.css">
-    <link rel="stylesheet" href="assets/css/Features-Boxed.css">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/ionicons.min.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Contact-FormModal-Contact-Form-with-Google-Map.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
   </head>
 <body style = "background-color:#eef4f7">
     <div class="features-boxed">
@@ -28,14 +28,16 @@
                 <h3 class="name">CREAZIONE ENTE</h3>
                 <p class="description">Permette di inserire <br> un nuovo ente</p>
                 <br>
-                <a href="new_agency_admin.php" class="learn-more">Clicca qui</a></div>
+                <a href="new_agency_admin.php"></a>
+              </div>
             </div>
             <div class="col-sm-6 col-md-5 col-lg-4 item">
               <div class="box"><i class="fa fa-gears icon"></i>
                 <h3 class="name">GESTIONE ENTI</h3>
                 <p class="description">Permette di visualizzare, modificare ed
                   eliminare un ente precedentemente inserito</p>
-                <a href="list_agency_fordetails_admin.php" class="learn-more">Clicca qui</a></div>
+                <a href="list_agency_fordetails_admin.php"></a>
+              </div>
             </div>
 <!--             <div class="col-sm-6 col-md-5 col-lg-4 item">
               <div class="box"><i class="fa fa-bar-chart icon"></i>

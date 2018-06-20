@@ -83,14 +83,15 @@
             <div class="box"><i class="fa fa-wrench icon"></i>
               <h3 class="name">VISUALIZZA TICKET DA RISOLVERE</h3>
               <p class="description">Permette assegnare un gruppo di risoluzione ad un ticket.</p>
-              <a class="learn-more" href="list_global_ticket.php">Clicca qui</a>
+              <a href="list_global_ticket.php"></a>
             </div>
           </div>
           <div class="col-sm-6 col-md-6 col-lg-4 item">
             <div class="box"><i class="fa fa-users icon"></i>
               <h3 class="name">GESTISCI GRUPPI RISOLUZIONE</h3>
               <p class="description">Permette di aggiungere, modificare ed eliminare i gruppi di risoluzione.</p>
-              <a class="learn-more" href="#">Clicca qui</a>
+              <br>
+              <a href="list_group_fordetails_agency.php"></a>
             </div>
           </div>
           <div class="col-sm-6 col-md-6 col-lg-4 item">
@@ -98,7 +99,7 @@
               <h3 class="name">GESTISCI DIPENDENTI</h3>
               <p class="description">Permette di aggiungere, modificare o rimuovere i dipendenti.</p>
               <br>
-              <a class="learn-more" href="list_employee.php">Clicca qui</a>
+              <a href="list_employee.php"></a>
             </div>
           </div>
           <div class="col-sm-6 col-md-6 col-lg-4 item">
@@ -106,7 +107,7 @@
               <h3 class="name">NUOVO TICKET</h3>
               <p class="description">Permette di inserire una nuova segnalazione di disservizio.</p>
               <br/>
-              <a class="learn-more" href="new_ticket_ente.php">Clicca qui</a>
+              <a href="new_ticket_agency.php"></a>
             </div>
           </div>
           <div class="col-sm-6 col-md-6 col-lg-4 item">
@@ -114,14 +115,15 @@
               <h3 class="name">GESTISCI TICKET</h3>
               <p class="description">Permette di visualizzare, modificare ed eliminare i ticket.</p>
               <br/>
-              <a class="learn-more" href="list_ticket_fordetails_ente.php">Clicca qui</a>
+              <a href="list_ticket_fordetails_agency.php"></a>
             </div>
           </div>
           <div class="col-sm-6 col-md-6 col-lg-4 item">
             <div class="box"><i class="fa fa-bar-chart icon"></i>
               <h3 class="name">VISUALIZZA STATISTICHE</h3>
               <p class="description">Permette di visualizzare delle statistiche sull'efficacia dello strumento.</p>
-              <a class="learn-more" href="view_stats_user.php">Clicca qui</a>
+              <br>
+              <a href="view_stats_agency.php"></a>
             </div>
           </div>
         </div>

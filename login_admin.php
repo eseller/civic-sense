@@ -63,7 +63,7 @@
                       	  	     // Attempt to execute the prepared statement
                       	  	     if(mysqli_stmt_execute($stmt)){              
                       	  	         // Redirect to login page
-                      	  	         header("location: responsabile/choose_activity_admin.html");
+                      	  	         header("location: responsabile/choose_activity_admin.php");
                       	  	      } else{
                       	  	         echo "Errore nell'inserimento della password nel database.";
                       	  	      }
@@ -76,7 +76,7 @@
                               	save the username to the session */
                               	session_start();
                               	$_SESSION['username'] = $username;
-                              	header("location: responsabile/choose_activity_admin.html");
+                              	header("location: responsabile/choose_activity_admin.php");
                           		} else{
                               	// Display an error message if password is not valid
                               	$password_err = 'La password inserita non è valida.';

@@ -104,22 +104,22 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Civic Sense</title>
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
-    <link rel="stylesheet" href="assets/fonts/ionicons.min.css">
-    <link rel="stylesheet" href="assets/css/Article-List.css">
-    <link rel="stylesheet" href="assets/css/Contact-FormModal-Contact-Form-with-Google-Map.css">
-    <link rel="stylesheet" href="assets/css/dh-row-text-image-right.css">
-    <link rel="stylesheet" href="assets/css/Features-Boxed.css">
-    <link rel="stylesheet" href="assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="assets/css/Forum---Thread-listing1.css">
-    <link rel="stylesheet" href="assets/css/Login-Form-Clean.css">
-    <link rel="stylesheet" href="assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="assets/css/Pretty-Registration-Form-1.css">
-    <link rel="stylesheet" href="assets/css/Login-Form-Dark.css">
-    <link rel="stylesheet" href="assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="assets/css/Sidebar-Menu1.css">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/ionicons.min.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Article-List.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Contact-FormModal-Contact-Form-with-Google-Map.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing1.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Clean.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form-1.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Dark.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu1.css">
+    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
   </head>
   <body>
     <div class="features-boxed">
@@ -194,7 +194,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
               <button class="btn btn-success btn-block" id="creaticket" type="submit">Crea ente</button>
             </div>
             <div class="col-sm-4 col-lg-3">
-              <button onclick="location.href='choose_activity_admin.html'" type="button" class="btn btn-danger btn-block">Annulla</button>
+              <button onclick="location.href='choose_activity_admin.php'" type="button" class="btn btn-danger btn-block">Annulla</button>
             </div>
           </div>
           <br>

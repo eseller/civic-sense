@@ -132,9 +132,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     $param_mail = $mail;
             
                     // Attempt to execute the prepared statement
-                    if(mysqli_stmt_execute($stmt)){              
-                        // Redirect to login page
-                        header("location: login_user.php");
+                    if(mysqli_stmt_execute($stmt)){         
+                        session_start();
+                        $_SESSION['username'] = $username;
+                        header("location: choose_activity_user.html");
                      } else{
                         echo "Errore nell'inserimento della mail nel database.";
                      }
@@ -205,7 +206,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     </div>
                 </div>
                 <div class="form-row form-group <?php echo (!empty($confirm_password_err)) ? 'has-error' : ''; ?>">
-                    <div class="col-sm-4 label-column"><label class="col-form-label" for="repeat-pawssword-input-field">Repeat Password</label></div>
+                    <div class="col-sm-4 label-column"><label class="col-form-label" for="repeat-pawssword-input-field">Conferma Password</label></div>
                     <div class="col-sm-6 input-column">
                     	<input class="form-control" type="password" name="confirm_password" value="<?php echo $confirm_password; ?>">
                     	<span class="help-block"><?php echo $confirm_password_err; ?></span>

@@ -27,27 +27,40 @@
     <div class="features-boxed">
         <div class="container">
             <div class="intro">
-                <h2 class="text-center">Civic Sense</h2>
+              <div class="row justify-content-center features"  style="padding-bottom: 20px;">
+                <img class="text-center" src="logo.png" height="200px" width="200px">
+              </div>
+                <h2 class="text-center" style="padding:10px;">Civic Sense</h2>
                 <p class="text-center">Civic Sense è un sistema al servizio del cittadino per la segnalazione di problemi, malfunzionamenti e guasti.</p>
             </div>
-                    <div class="container">
-            <div class="row justify-content-center features">
+            <div class="container">
+              <div class="row justify-content-center features">
                 <div class="col-sm-6 col-md-5 col-lg-4 item">
-                    <div class="box"><i class="icon ion-android-person" style="color:#5547f4;font-size:85px;"></i>
-                        <h3 class="name">LOGIN</h3>
-                        <p class="description"><a href="login_user.php" class="learn-more">Entra nel tuo profilo</a></p></div>
+                  <div class="box"><i class="icon ion-android-person" style="color:#5547f4;font-size:85px;"></i>
+                    <h3 class="name">LOGIN</h3>
+                    <p class="description">Entra nel tuo profilo</p>
+                    <a href="login_user.php"></a>
+                  </div>
                 </div>
                 <div class="col-sm-6 col-md-5 col-lg-4 item">
-                    <div class="box"><i class="icon ion-android-person-add" style="color:#5547f4;font-size:85px;"></i>
-                        <h3 class="name">REGISTRATI</h3>
-                        <p class="description"><a href="signup_user.php" class="learn-more">Registrati alla piattaforma</a></p></div>
+                  <div class="box"><i class="icon ion-android-person-add" style="color:#5547f4;font-size:85px;"></i>
+                    <h3 class="name">REGISTRATI</h3>
+                    <p class="description">Registrati alla piattaforma</p>
+                    <a href="signup_user.php"></a>
+                  </div>
                 </div>
-            </div>
+              </div>
             </div>
         </div>
     </div>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      $(".box").click(function(){
+      window.location=$(this).find("a").attr("href");
+      return false;
+      });
+    </script>
     <script src="assets/js/Contact-FormModal-Contact-Form-with-Google-Map.js"></script>
     <script src="assets/js/Sidebar-Menu.js"></script>
 </body>

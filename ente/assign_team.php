@@ -29,6 +29,7 @@
   $segnalatore_reale = $row['segnalatore'];
   $stato = $row['stato'];
   $report = $row['report'];
+  $id_gruppo_risoluzione = $row['id_gruppo_risoluzione'];
 
   // function utente_impostore($segnalatore_reale_prova){
   //   $sql1 = "SELECT username FROM ente";
@@ -52,7 +53,7 @@
 
     // Se è una post per la modifica della gravità entra qui <------------------------
     if (!empty($_POST['modifica_gravita'])) {
-
+      $gravita = $gravita_err = "";
       // Check if gravità is empty
       if(empty(trim($_POST['gravita']))){
           $gravita_err = 'Inserire la gravita.';
@@ -67,12 +68,11 @@
       $result = mysqli_query($link, $sql);
       header("location:list_global_ticket.php");
 
-    } elseif (!empty($_POST['invalida_ticket'])) {
-      // Se è una post per l'invalidazione del ticket entra qui <------------------------
+    }// Se è una post per l'invalidazione del ticket entra qui <------------------------
+    elseif (!empty($_POST['invalida_ticket'])) {
 
-      $id_ticket = trim($_POST['id_ticket']);
-      echo "entra nella richiesta di invalidazione";
-      echo $id_ticket;
+      $stato = $stato_err = "";
+
       // Check if gravità is empty
       if(empty(trim($_POST['stato']))){
           $stato_err = 'Inserire lo stato.';
@@ -81,7 +81,7 @@
           echo trim($_POST['stato']);
       }
 
-      // Check if gravità is empty
+      // Check if report is empty
       if(empty(trim($_POST['report']))){
           $report_err = 'Inserire il report.';
       } else{
@@ -89,10 +89,41 @@
       }
 
       $id_ticket = trim($_POST['id_ticket']);
+
       $sql = "UPDATE ticket SET report='$report', stato='$stato' WHERE id_ticket = $id_ticket";
       $result = mysqli_query($link, $sql);
 
       header("location:list_global_ticket.php");
+    } elseif (!empty($_POST['assegna_gruppo'])) {    // Se è una post per l'assegnazione del gruppo di risoluzione entra qui <------------------------
+
+      $codice = $codice_err = "";
+
+      // Check if report is empty
+      if(empty(trim($_POST['codice_gruppo']))){
+          $codice_err = 'Inserire il codice gruppo.';
+      } else{
+          $codice = trim($_POST['codice_gruppo']);
+      }
+
+      // Check if stato is empty
+      if(empty(trim($_POST['stato']))){
+          $stato_err = 'Inserire lo stato.';
+      } else{
+          $stato = trim($_POST['stato']);
+      }
+
+      $sql_validazione = "SELECT id_gruppo_risoluzione FROM gruppo_risoluzione WHERE id_gruppo_risoluzione=$codice AND attivo=1";
+      $result_validazione  = mysqli_query($link, $sql_validazione);
+      if (count($result_validazione)>0) {
+        $id_ticket = trim($_POST['id_ticket']);
+
+        $sql = "UPDATE ticket SET stato=$stato, id_gruppo_risoluzione=$codice WHERE id_ticket = $id_ticket";
+        $result = mysqli_query($link, $sql);
+
+        header("location:list_global_ticket.php");
+      }else {
+        $codice_err = 'Il codice non è valido';
+      }
     }
   }
 
@@ -300,19 +331,43 @@
         <br>
 
         <!-- contenitore per agiunta gruppo di risoluzione -->
-        <div class="form-row justify-content-center">
-          <div class="col-sm-12 col-lg-12">
-            <h4 class="text-center">Assegna gruppo di risoluzione</h4>
-          </div>
-          <div class="col-sm-6 col-lg-6">
-            <label>Assegna gruppo esistente</label>
-            <input class="form-control" disabled placeholder="<?php echo $stato ?>">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+          <div class="form-row justify-content-center">
+            <div class="col-sm-12 col-lg-12">
+              <h4 class="text-center">Assegna gruppo di risoluzione</h4>
+            </div>
+           <?php
+             if ($id_gruppo_risoluzione!="") {
+               $sql1 = "SELECT username_dipendente FROM partecipazione WHERE id_gruppo_risoluzione=$id_gruppo_risoluzione";
+               $result1 = mysqli_query($link, $sql1);
+               $i=0;
+               $nomi_dip="";
+               while ($row1 = mysqli_fetch_assoc($result1)) {
+                 if ($i==0) {
+                   $nomi_dip .= $row1['username_dipendente'];
+                 }else {
+                   $nomi_dip .= ", ";
+                   $nomi_dip .= $row1['username_dipendente'];
+                 }
+                 $i++;
+               }
+               echo "<div class=\"col-sm-12 col-lg-12\">";
+               echo "<p class=\"text-center\">Il ticket è assegnato al gruppo n° <strong>$id_gruppo_risoluzione</strong> formato da: $nomi_dip</p>";
+               echo "</div>";
+             }
+           ?>
+            <input type="text" name="id_ticket" value="<?php echo $id_ticket; ?>" hidden>
+            <input type="text" name="stato" value="Preso in carico" hidden>
+            <div class="col-sm-6 col-lg-4">
+              <input type="text" class="form-control" name="codice_gruppo" placeholder="Inserisci il codice del gruppo di risoluzione" required <?php if($id_gruppo_risoluzione!=""){echo "value=\"$id_gruppo_risoluzione\"";}?>>
+              <br>
+              <div class="form-row justify-content-center">
+                <input type="submit" name="assegna_gruppo" class="btn btn-success" data-toggle="modal" value="Assegna gruppo">
+              </div>
+        </form>
             <br>
             <div class="form-row justify-content-center">
-              <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#ModalLarge" value="Assegna gruppo">
-            </div>
-            <div class="form-row justify-content-center">
-              <input type="button" class="btn btn-warning" data-toggle="modal" data-target="#ModalLarge" value="Visualizza gruppi">
+              <button type="button" class="btn btn-info" data-toggle="modal" data-target="#ModalLarge">Visualizza gruppi esistenti</button>
             </div>
           </div>
         </div>
@@ -335,6 +390,7 @@
       </div>
     </div>
 
+    <!-- Modal per la conferma invalidazione -->
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
       <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -363,8 +419,9 @@
       </div>
     </form>
 
+    <!-- Modal per la viusualizzazione dei gruppi di risoluzione -->
     <div class="modal fade bd-example-modal-lg" id="ModalLarge" tabindex="-1" role="dialog" aria-labelledby="ModalCenterLarge" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="ModalCenterTitle">Elenco gruppi di risoluzione</h5>
@@ -373,7 +430,51 @@
             </button>
           </div>
           <div class="modal-body" id="modal-body">
+            <div class="container-fluid">
+              <?php
+                // preparazione della query che ricava gli id delle segnalazioni dell'utente
+                $sql = "SELECT id_gruppo_risoluzione FROM gruppo_risoluzione WHERE attivo=1";
+                $result = mysqli_query($link, $sql);
+                $valori = mysqli_num_rows($result);
 
+
+                // se la query produce righe, costruisco la tabella
+                if ($valori>0) {
+                  // stampa la tabella
+                  echo "<div class=\"table-responsive\">";
+                    echo "<table class=\"table table-hover \">";
+                      echo "<thead>";
+                        echo "<tr>";
+                          echo "<th>ID gruppo</th>";
+                          echo "<th>Nomi dipendenti</th>";
+                        echo "</tr>";
+                      echo "<tbody>";
+                        while ($row = mysqli_fetch_assoc($result)){
+                          echo "<tr>";
+                          echo "<td>".$row['id_gruppo_risoluzione']."</td>";
+                          $id_gruppo = $row['id_gruppo_risoluzione'];
+                          $sql1 = "SELECT username_dipendente FROM partecipazione WHERE id_gruppo_risoluzione=$id_gruppo";
+                          $result1 = mysqli_query($link, $sql1);
+                          $i=0;
+                          $nomi_dip="";
+                          while ($row1 = mysqli_fetch_assoc($result1)) {
+                            if ($i==0) {
+                              $nomi_dip .= $row1['username_dipendente'];
+                            }else {
+                              $nomi_dip .= ", ";
+                              $nomi_dip .= $row1['username_dipendente'];
+                            }
+                            $i++;
+                          }
+                          echo "<td>".$nomi_dip."</td>";
+                        }
+                        echo "</tr>";
+                      echo "</tbody>";
+                    echo "</table>";
+                  echo "</div>";
+                }
+              ?>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" data-dismiss="modal">Chiudi</button>
@@ -393,81 +494,81 @@
 
     </script>
     <script>
-    // Initialize and add the map
-    function initMap() {
+      // Initialize and add the map
+      function initMap() {
 
-      // var luru = new google.maps.LatLng(
-      //     parseFloat(document.getElementById("latitudine").value),
-      //     parseFloat(document.getElementById("longitudine").value));
+        // var luru = new google.maps.LatLng(
+        //     parseFloat(document.getElementById("latitudine").value),
+        //     parseFloat(document.getElementById("longitudine").value));
 
-      var lati = parseFloat(document.getElementById("latitudine").value);
-      var longi = parseFloat(document.getElementById("longitudine").value);
-      // The location of Uluru
+        var lati = parseFloat(document.getElementById("latitudine").value);
+        var longi = parseFloat(document.getElementById("longitudine").value);
+        // The location of Uluru
 
-      var uluru = {lat: lati, lng: longi};
+        var uluru = {lat: lati, lng: longi};
 
-      // The map, centered at Uluru
-      var map = new google.maps.Map(document.getElementById('map'), {zoom: 17, center: uluru});
-      // The marker, positioned at Uluru
-      var marker = new google.maps.Marker({position: uluru, map: map});
+        // The map, centered at Uluru
+        var map = new google.maps.Map(document.getElementById('map'), {zoom: 17, center: uluru});
+        // The marker, positioned at Uluru
+        var marker = new google.maps.Marker({position: uluru, map: map});
 
-      var infoWindow = new google.maps.InfoWindow;
+        var infoWindow = new google.maps.InfoWindow;
 
-      var id = document.getElementById("id_ticket").value;
+        var id = document.getElementById("id_ticket").value;
 
-       // Change this depending on the name of your PHP or XML file
-       downloadUrl('xml/gen_xml_map_ente.php?id='+id, function(data) {
-         var xml = data.responseXML;
-         var markers = xml.documentElement.getElementsByTagName('marker');
-         Array.prototype.forEach.call(markers, function(markerElem) {
-           var descrizione = markerElem.getAttribute('descrizione');
-           var data = markerElem.getAttribute('data');
-           var gravita = markerElem.getAttribute('gravita');
-           var tag = markerElem.getAttribute('tag');
-           var point = new google.maps.LatLng(
-               parseFloat(markerElem.getAttribute('latitudine')),
-               parseFloat(markerElem.getAttribute('longitudine')));
+         // Change this depending on the name of your PHP or XML file
+         downloadUrl('xml/gen_xml_map_agency.php?id='+id, function(data) {
+           var xml = data.responseXML;
+           var markers = xml.documentElement.getElementsByTagName('marker');
+           Array.prototype.forEach.call(markers, function(markerElem) {
+             var descrizione = markerElem.getAttribute('descrizione');
+             var data = markerElem.getAttribute('data');
+             var gravita = markerElem.getAttribute('gravita');
+             var tag = markerElem.getAttribute('tag');
+             var point = new google.maps.LatLng(
+                 parseFloat(markerElem.getAttribute('latitudine')),
+                 parseFloat(markerElem.getAttribute('longitudine')));
 
-           var infowincontent = document.createElement('div');
-           var strong = document.createElement('strong');
-           strong.textContent = descrizione
-           infowincontent.appendChild(strong);
-           infowincontent.appendChild(document.createElement('br'));
+             var infowincontent = document.createElement('div');
+             var strong = document.createElement('strong');
+             strong.textContent = descrizione
+             infowincontent.appendChild(strong);
+             infowincontent.appendChild(document.createElement('br'));
 
-           var text = document.createElement('text');
-           text.textContent = data
-           infowincontent.appendChild(text);
-           // var icon = customLabel[type] || {};
-           var marker = new google.maps.Marker({
-             map: map,
-             position: point,
-             // label: icon.label
-           });
-           marker.addListener('click', function() {
-             infoWindow.setContent(infowincontent);
-             infoWindow.open(map, marker);
+             var text = document.createElement('text');
+             text.textContent = data
+             infowincontent.appendChild(text);
+             // var icon = customLabel[type] || {};
+             var marker = new google.maps.Marker({
+               map: map,
+               position: point,
+               // label: icon.label
+             });
+             marker.addListener('click', function() {
+               infoWindow.setContent(infowincontent);
+               infoWindow.open(map, marker);
+             });
            });
          });
-       });
-     }
-
-    function downloadUrl(url, callback) {
-     var request = window.ActiveXObject ?
-         new ActiveXObject('Microsoft.XMLHTTP') :
-         new XMLHttpRequest;
-
-     request.onreadystatechange = function() {
-       if (request.readyState == 4) {
-         request.onreadystatechange = doNothing;
-         callback(request, request.status);
        }
-     };
 
-     request.open('GET', url, true);
-     request.send(null);
-    }
+      function downloadUrl(url, callback) {
+       var request = window.ActiveXObject ?
+           new ActiveXObject('Microsoft.XMLHTTP') :
+           new XMLHttpRequest;
 
-    function doNothing() {}
+       request.onreadystatechange = function() {
+         if (request.readyState == 4) {
+           request.onreadystatechange = doNothing;
+           callback(request, request.status);
+         }
+       };
+
+       request.open('GET', url, true);
+       request.send(null);
+      }
+
+      function doNothing() {}
     </script>
     <!--Load the API from the specified URL
     * The async attribute allows the browser to render the page while the API loads

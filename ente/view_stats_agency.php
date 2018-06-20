@@ -149,7 +149,7 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
       </div>
       <div class="form-row justify-content-center">
         <div class="col-sm-4 col-lg-3">
-          <button onclick="location.href='choose_activity_user.html'" type="button" class="btn btn-danger btn-block">Indietro</button>
+          <button onclick="location.href='choose_activity_agency.php'" type="button" class="btn btn-danger btn-block">Indietro</button>
         </div>
       </div>
       <br>

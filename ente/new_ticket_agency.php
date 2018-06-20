@@ -44,7 +44,7 @@
       ('$descrizione','$provincia','$data','$latitudine','$longitudine','$citta','$indirizzo','$tag','$gravitabox',
       '$username','In attesa di approvazione')";
       if (mysqli_query($link, $sql)) {
-      header("location: choose_activity_ente.php");
+      header("location: choose_activity_agency.php");
     } else {
       echo "Error: " . $sql . "<br>" . mysqli_error($link);
     }
@@ -252,7 +252,7 @@
               <button class="btn btn-success btn-block" id="creaticket" type="submit">Crea ticket</button>
             </div>
             <div class="col-sm-4 col-lg-3">
-              <button onclick="location.href='choose_activity_ente.php'" type="button" class="btn btn-danger btn-block">Annulla</button>
+              <button onclick="location.href='choose_activity_agency.php'" type="button" class="btn btn-danger btn-block">Annulla</button>
             </div>
           </div>
 

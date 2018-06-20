@@ -105,7 +105,7 @@
                       if ($stato!= "Invalidato") {
                         echo "<td><button type=\"button\" class=\"btn btn-warning btn-sm\" onclick=\"location.href='assign_team.php?id=".$id_ticket."'\">Modifica Gruppo/Visualizza ✏</button></td>";
                       }else {
-                        echo "<td><button type=\"button\" class=\"btn btn-primary btn-sm\" onclick=\"location.href='view_ticket_ente.php?id=".$id_ticket."'\">Visualizza ➡</button></td>";
+                        echo "<td><button type=\"button\" class=\"btn btn-primary btn-sm\" onclick=\"location.href='view_ticket_agency.php?id=".$id_ticket."'\">Visualizza ➡</button></td>";
                       }
                     echo "</tr>";
                   }
@@ -120,7 +120,7 @@
             ?>
             <div class="form-row justify-content-center">
               <div class="col-sm-4 col-lg-5">
-                <button class="btn btn-dark btn-block" type="button" onclick="location.href='choose_activity_ente.php'">Indietro</button>
+                <button class="btn btn-dark btn-block" type="button" onclick="location.href='choose_activity_agency.php'">Indietro</button>
               </div>
             </div>
             <br>

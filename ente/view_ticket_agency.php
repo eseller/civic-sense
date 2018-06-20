@@ -173,7 +173,7 @@
 
             <br>
             <br>
-              <button class="btn btn-danger btn-block" type="button" onclick="location.href='list_ticket_fordetails_ente.php'">Indietro</button>
+              <button class="btn btn-danger btn-block" type="button" onclick="location.href='list_ticket_fordetails_agency.php'">Indietro</button>
             <br>
             <br>
         </div>
@@ -210,7 +210,7 @@
       var id = document.getElementById("id_ticket").value;
 
        // Change this depending on the name of your PHP or XML file
-       downloadUrl('xml/gen_xml_map_ente.php?id='+id, function(data) {
+       downloadUrl('xml/gen_xml_map_agency.php?id='+id, function(data) {
          var xml = data.responseXML;
          var markers = xml.documentElement.getElementsByTagName('marker');
          Array.prototype.forEach.call(markers, function(markerElem) {
