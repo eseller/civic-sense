@@ -1,17 +1,27 @@
 <?php
-// Include stats_query_tot file
-require_once __DIR__.'/../stats/stats_query_tot.php';
-// Include stats_query_pv file
-require_once __DIR__.'/../stats/stats_query_pv.php';
+  // Include stats_query_tot file
+  require_once __DIR__.'/../stats/stats_query_tot.php';
+  // Include stats_query_pv file
+  require_once __DIR__.'/../stats/stats_query_pv.php';
 
-// Initialize the session
-session_start();
+  // Initialize the session
+  session_start();
 
-// If session variable is not set it will redirect to login page
-if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
-  header("location: https://civicsensesst.altervista.org/login_user.php");
-  exit;
-}
+  // If session variable is not set it will redirect to login page
+  if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
+    header("location: https://civicsensesst.altervista.org/login_user.php");
+    exit;
+  }
+
+  if(!isset($_SESSION['ente'])){
+    echo "<br />";
+    echo "<br />";
+    echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+    echo "<br />";
+    echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+    header("refresh:3;url=".home_url());
+    die();
+  }
 
 ?>
 
@@ -21,7 +31,7 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Civic Sense</title>
+    <title>Statistiche generali</title>
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/ionicons.min.css">
@@ -30,13 +40,10 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form-1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
     <style type="text/css">
       #chart-container {

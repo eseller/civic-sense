@@ -11,45 +11,56 @@
     exit;
   }
 
-  $id_ticket = $_GET['id'];
+  if($_SERVER["REQUEST_METHOD"] == "GET"){
 
-  $sql = "SELECT * FROM ticket WHERE id_ticket = $id_ticket";
-  $result = mysqli_query($link, $sql);
-  $row = mysqli_fetch_assoc($result);
+    $id_ticket = $_GET['id'];
 
-  $descrizione= $row['descrizione'];
-  $data = $row['data'];
-  $latitude = $row['latitudine'];
-  $longitude = $row['longitudine'];
-  $provincia = $row['provincia'];
-  $citta = $row['citta'];
-  $indirizzo = $row['indirizzo'];
-  $tag = $row['tag'];
-  $gravita = $row['gravita'];
-  $segnalatore_reale = $row['segnalatore'];
-  $stato = $row['stato'];
-  $report = $row['report'];
-  $id_gruppo_risoluzione = $row['id_gruppo_risoluzione'];
+    $sql = "SELECT * FROM ticket WHERE id_ticket = $id_ticket";
+    $result = mysqli_query($link, $sql);
+    $row = mysqli_fetch_assoc($result);
 
-  // function utente_impostore($segnalatore_reale_prova){
-  //   $sql1 = "SELECT username FROM ente";
-  //   $result1 = mysqli_query($link, $sql1);
-  //   $row1 = mysqli_fetch_assoc($result1);
-  //
-  //   foreach ($variable as $row1) {
-  //     if($variabile['username']==$_SESSION['username']){
-  //       $trovato = 1;
-  //     }
-  //   }
-  //   if($trovato==1){
-  //     return false;
-  //   } else {
-  //     mysqli_close($link);
-  //     return true;
-  //   }
-  // }
+    $descrizione= $row['descrizione'];
+    $data = $row['data'];
+    $latitude = $row['latitudine'];
+    $longitude = $row['longitudine'];
+    $provincia = $row['provincia'];
+    $citta = $row['citta'];
+    $indirizzo = $row['indirizzo'];
+    $tag = $row['tag'];
+    $gravita = $row['gravita'];
+    $segnalatore_reale = $row['segnalatore'];
+    $stato = $row['stato'];
+    $report = $row['report'];
+    $id_gruppo_risoluzione = $row['id_gruppo_risoluzione'];
+
+    $utente_attuale=$_SESSION['username'];
+
+    $sql1 = "SELECT tag, provincia FROM ente WHERE username='$utente_attuale'";
+    $result1 = mysqli_query($link, $sql1);
+    $row1 = mysqli_fetch_assoc($result1);
+
+    if(!isset($_SESSION['ente']) || $tag != $row1['tag'] || $provincia != $row1['provincia']){
+      echo "<br />";
+      echo "<br />";
+      echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+      echo "<br />";
+      echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+      header("refresh:3;url=".home_url());
+      die();
+    }
+  }
 
   if($_SERVER["REQUEST_METHOD"] == "POST"){
+
+    if(!isset($_SESSION['ente'])){
+      echo "<br />";
+      echo "<br />";
+      echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+      echo "<br />";
+      echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+      header("refresh:3;url=".home_url());
+      die();
+    }
 
     // Se è una post per la modifica della gravità entra qui <------------------------
     if (!empty($_POST['modifica_gravita'])) {
@@ -67,8 +78,7 @@
       $sql = "UPDATE ticket SET gravita='$gravita' WHERE id_ticket = $id_ticket";
       $result = mysqli_query($link, $sql);
       header("location:list_global_ticket.php");
-
-    }// Se è una post per l'invalidazione del ticket entra qui <------------------------
+    }// Se è una post per l'invalidazione del ticket entra qui <---------------------------------
     elseif (!empty($_POST['invalida_ticket'])) {
 
       $stato = $stato_err = "";
@@ -94,7 +104,8 @@
       $result = mysqli_query($link, $sql);
 
       header("location:list_global_ticket.php");
-    } elseif (!empty($_POST['assegna_gruppo'])) {    // Se è una post per l'assegnazione del gruppo di risoluzione entra qui <------------------------
+    }// Se è una post per l'assegnazione del gruppo di risoluzione entra qui <---------------------------------
+    elseif (!empty($_POST['assegna_gruppo'])) {
 
       $codice = $codice_err = "";
 
@@ -106,21 +117,27 @@
       }
 
       // Check if stato is empty
-      if(empty(trim($_POST['stato']))){
-          $stato_err = 'Inserire lo stato.';
-      } else{
-          $stato = trim($_POST['stato']);
-      }
+      // if(empty(trim($_POST['stato']))){
+      //     $stato_err = 'Inserire lo stato.';
+      // } else{
+      //     $stato = trim($_POST['stato']);
+      // }
+
+      $stato = "Preso in carico";
 
       $sql_validazione = "SELECT id_gruppo_risoluzione FROM gruppo_risoluzione WHERE id_gruppo_risoluzione=$codice AND attivo=1";
       $result_validazione  = mysqli_query($link, $sql_validazione);
       if (count($result_validazione)>0) {
         $id_ticket = trim($_POST['id_ticket']);
 
-        $sql = "UPDATE ticket SET stato=$stato, id_gruppo_risoluzione=$codice WHERE id_ticket = $id_ticket";
-        $result = mysqli_query($link, $sql);
+        $sql = "UPDATE ticket SET stato='$stato', id_gruppo_risoluzione=$codice WHERE id_ticket = $id_ticket";
+        if (mysqli_query($link, $sql)) {
+          header("location: list_global_ticket.php");
+        } else {
+          echo "Error: " . $sql . "<br>" . mysqli_error($link);
+        }
 
-        header("location:list_global_ticket.php");
+        // header("location:list_global_ticket.php");
       }else {
         $codice_err = 'Il codice non è valido';
       }
@@ -143,13 +160,10 @@
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form-1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
     <style>
        /* Set the size of the div element that contains the map */
@@ -330,7 +344,7 @@
         <br>
         <br>
 
-        <!-- contenitore per agiunta gruppo di risoluzione -->
+        <!-- contenitore per aggiunta gruppo di risoluzione -->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
           <div class="form-row justify-content-center">
             <div class="col-sm-12 col-lg-12">
@@ -392,8 +406,8 @@
 
     <!-- Modal per la conferma invalidazione -->
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-      <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal fade bd-example-modal-lg" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="ModalCenterTitle">Vuoi davvero invalidare il ticket?</h5>
@@ -433,8 +447,13 @@
             <div class="container-fluid">
               <?php
                 // preparazione della query che ricava gli id delle segnalazioni dell'utente
-                $sql = "SELECT id_gruppo_risoluzione FROM gruppo_risoluzione WHERE attivo=1";
+                $ente_attuale = $_SESSION['username'];
+                $sql = "SELECT id_gruppo_risoluzione FROM gruppo_risoluzione WHERE attivo=1 AND username_ente='$ente_attuale'";
                 $result = mysqli_query($link, $sql);
+
+                if (!$result) {
+                  echo "Error: " . $sql . "<br>" . mysqli_error($link);
+                }
                 $valori = mysqli_num_rows($result);
 
 

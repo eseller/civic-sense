@@ -11,6 +11,16 @@
     exit;
   }
 
+  if(!isset($_SESSION['ente'])){
+    echo "<br/>";
+    echo "<br/>";
+    echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+    echo "<br />";
+    echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+    header("refresh:3;url=".home_url());
+    die();
+  }
+
   if($_SERVER["REQUEST_METHOD"] == "POST"){
     $id_ticket = $_POST['id_ticket'];
     $sql = "DELETE FROM ticket WHERE id_ticket = $id_ticket";
@@ -44,16 +54,13 @@
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form-1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
   </head>
-<body style = "background-color:#eef4f7">
+<body style="background-color:#eef4f7">
     <div class="features-boxed">
       <div class="container">
         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
@@ -63,7 +70,7 @@
             <?php
               // preparazione della query che ricava gli id delle segnalazioni dell'utente
               $username = $_SESSION['username'];
-              $sql = "SELECT id_ticket, data, gravita, stato, id_gruppo_risoluzione FROM ticket WHERE segnalatore LIKE '$username'";
+              $sql = "SELECT id_ticket, data, tag, gravita, stato, id_gruppo_risoluzione FROM ticket WHERE segnalatore LIKE '$username'";
               $result = mysqli_query($link, $sql);
               $valori = mysqli_num_rows($result);
 
@@ -77,6 +84,7 @@
                       echo "<tr>";
                         echo "<th>ID</th>";
                         echo "<th>Data</th>";
+                        echo "<th>Tag</th>";
                         echo "<th>Gravità</th>";
                         echo "<th>Stato</th>";
                       echo "</tr>";
@@ -87,6 +95,7 @@
                     echo "<tr>";
                       echo "<td>".$row['id_ticket']."</td>";
                       echo "<td>".$row['data']."</td>";
+                      echo "<td>".$row['tag']."</td>";
                       echo "<td>".$row['gravita']."</td>";
                       echo "<td>".$row['stato']."</td>";
                       $stato = $row['stato'];

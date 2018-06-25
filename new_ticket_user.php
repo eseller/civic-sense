@@ -1,67 +1,77 @@
 <?php
-// Include config file
-require_once 'config.php';
+  // Include config file
+  require_once 'config.php';
 
-// Initialize the session
-session_start();
+  // Initialize the session
+  session_start();
 
-// If session variable is not set it will redirect to login page
-if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
-  header("location: login_user.php");
-  exit;
-}
-
-$username = $_SESSION['username'];
-$descrizione = $indirizzo = $tag = $gravitabox = $data = $citta = $provincia = $latitudine = $longitudine = "";
-$descrizione_err = $latitudine_err = "";
-
-// ID Ticket
-$sql = "SELECT MAX(id_ticket) FROM ticket";
-$result = mysqli_query($link, $sql);
-$row = mysqli_fetch_assoc($result);
-$id_ticket = $row['MAX(id_ticket)'];
-
-if($_SERVER["REQUEST_METHOD"] == "POST"){
-  $id_ticket++;
-  // Check if descrizione is empty
-  if(empty(trim($_POST["descrizione"]))){
-      $descrizione_err = 'Inserire una descrizione.';
-  } else{
-      $descrizione = trim($_POST["descrizione"]);
+  // If session variable is not set it will redirect to login page
+  if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
+    header("location: login_user.php");
+    exit;
   }
-  // Directory immagini
-  $target_dir = "./immagini_ticket/";
-  // Salvataggio nomi immagini su variabili
-  $pic1 = basename($_FILES["pic1"]["name"]);
-  $path1 = $target_dir.$id_ticket."_1_".$pic1;
-  move_uploaded_file($_FILES['pic1']['tmp_name'],$path1);
-  $pic2 = basename($_FILES["pic2"]["name"]);
-  $path2 = $target_dir.$id_ticket."_2_".$pic2;
-  move_uploaded_file($_FILES['pic2']['tmp_name'],$path2);
-  // Salvataggio variabili per INSERT
-  $indirizzo = trim($_POST['indirizzo']);
-  $tag = trim($_POST["tag"]);
-  $gravitabox = trim($_POST["gravitabox"]);
-  $data = date('Y-m-d');
-  $citta = trim($_POST["citta"]);
-  $provincia = trim($_POST['provincia']);
-  $latitudine = floatval($_POST['latitudine']);
-  $longitudine = floatval($_POST['longitudine']);
-  // Inserimento ticket
-  $sql = "INSERT INTO ticket
-  (descrizione,provincia,data,latitudine,longitudine,citta,
-  indirizzo,tag,gravita,segnalatore,stato,immagine1,immagine2)
-  VALUES
-  ('$descrizione','$provincia','$data','$latitudine','$longitudine','$citta','$indirizzo','$tag','$gravitabox',
-  '$username','In attesa di approvazione','$path1','$path2')";
-  // Gestione errore
-  if (mysqli_query($link, $sql)) {
-      header("location: view_ticket_user.php?id=".$id_ticket);
-  } else {
-      echo "Error: " . $sql . "<br>" . mysqli_error($link);
+
+  if(!isset($_SESSION['utente'])){
+    echo "<br />";
+    echo "<br />";
+    echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+    echo "<br />";
+    echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+    header("refresh:3;url=".home_url());
+    die();
   }
-  mysqli_close($link);
-}
+
+  $username = $_SESSION['username'];
+  $descrizione = $indirizzo = $tag = $gravitabox = $data = $citta = $provincia = $latitudine = $longitudine = "";
+  $descrizione_err = $latitudine_err = "";
+
+  // ID Ticket
+  $sql = "SELECT MAX(id_ticket) FROM ticket";
+  $result = mysqli_query($link, $sql);
+  $row = mysqli_fetch_assoc($result);
+  $id_ticket = $row['MAX(id_ticket)'];
+
+  if($_SERVER["REQUEST_METHOD"] == "POST"){
+    $id_ticket++;
+    // Check if descrizione is empty
+    if(empty(trim($_POST["descrizione"]))){
+        $descrizione_err = 'Inserire una descrizione.';
+    } else{
+        $descrizione = trim($_POST["descrizione"]);
+    }
+    // Directory immagini
+    $target_dir = "./immagini_ticket/";
+    // Salvataggio nomi immagini su variabili
+    $pic1 = basename($_FILES["pic1"]["name"]);
+    $path1 = $target_dir.$id_ticket."_1_".$pic1;
+    move_uploaded_file($_FILES['pic1']['tmp_name'],$path1);
+    $pic2 = basename($_FILES["pic2"]["name"]);
+    $path2 = $target_dir.$id_ticket."_2_".$pic2;
+    move_uploaded_file($_FILES['pic2']['tmp_name'],$path2);
+    // Salvataggio variabili per INSERT
+    $indirizzo = trim($_POST['indirizzo']);
+    $tag = trim($_POST["tag"]);
+    $gravitabox = trim($_POST["gravitabox"]);
+    $data = date('Y-m-d');
+    $citta = trim($_POST["citta"]);
+    $provincia = trim($_POST['provincia']);
+    $latitudine = floatval($_POST['latitudine']);
+    $longitudine = floatval($_POST['longitudine']);
+    // Inserimento ticket
+    $sql = "INSERT INTO ticket
+    (descrizione,provincia,data,latitudine,longitudine,citta,
+    indirizzo,tag,gravita,segnalatore,stato,immagine1,immagine2)
+    VALUES
+    ('$descrizione','$provincia','$data','$latitudine','$longitudine','$citta','$indirizzo','$tag','$gravitabox',
+    '$username','In attesa di approvazione','$path1','$path2')";
+    // Gestione errore
+    if (mysqli_query($link, $sql)) {
+        header("location: view_ticket_user.php?id=".$id_ticket);
+    } else {
+        echo "Error: " . $sql . "<br>" . mysqli_error($link);
+    }
+    mysqli_close($link);
+  }
 ?>
 
 <!DOCTYPE html>
@@ -78,13 +88,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <link rel="stylesheet" href="assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="assets/css/Forum---Thread-listing1.css">
+
     <link rel="stylesheet" href="assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="assets/css/Pretty-Registration-Form-1.css">
+
     <link rel="stylesheet" href="assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="assets/css/Sidebar-Menu1.css">
+
     <link rel="stylesheet" href="assets/css/styles.css">
   </head>
   <body onload="showdate()" style = "background-color:#eef4f7">
@@ -221,7 +231,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
               <button class="btn btn-success btn-block" id="creaticket" disabled="true" type="submit">Crea ticket</button>
             </div>
             <div class="col-sm-4 col-lg-3">
-              <button onclick="location.href='choose_activity_user.html'" type="button" class="btn btn-danger btn-block">Annulla</button>
+              <button onclick="location.href='choose_activity_user.php'" type="button" class="btn btn-danger btn-block">Annulla</button>
             </div>
           </div>
 

@@ -11,6 +11,16 @@
     exit;
   }
 
+  if(!isset($_SESSION['ente'])){
+    echo "<br />";
+    echo "<br />";
+    echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+    echo "<br />";
+    echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+    header("refresh:3;url=".home_url());
+    die();
+  }
+
   $id_ticket = $_GET['id'];
 
   $sql = "SELECT * FROM ticket WHERE id_ticket = $id_ticket";
@@ -29,6 +39,8 @@
   $segnalatore_reale = $row['segnalatore'];
   $stato = $row['stato'];
   $report = $row['report'];
+  $immagine1 = $row['immagine1'];
+  $immagine2 = $row['immagine2'];
 
 ?>
 
@@ -37,7 +49,7 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assegna gruppo di risoluzione</title>
+    <title>Visualizza ticket</title>
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/ionicons.min.css">
@@ -46,15 +58,31 @@
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form-1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
     <style>
+    .responsive {
+      width: 100%;
+      height: auto;
+      }
+    * {
+    box-sizing: border-box;
+      }
+      .column {
+        text-align: center;
+        float: left;
+        width: 33.33%;
+        padding: 5px;
+      }
+      /* Clearfix (clear floats) */
+      .row::after {
+        content: "";
+        clear: both;
+        display: table;
+      }
        /* Set the size of the div element that contains the map */
       #map {
         height: 400px;  /* The height is 400 pixels */
@@ -166,7 +194,19 @@
                 <textarea readonly class="form-control" type="text" rows="4"><?php echo $report; ?></textarea>
               </div>
             </div>
-
+            <br>
+            <div class="form-row justify-content-center">
+              <label>Immagini Allegate</label>
+            </div>
+            <div class="row justify-content-center">
+              <div class="column">
+                <img src="https://civicsensesst.altervista.org<?php echo $immagine1;?>" class="responsive" style="height:100%;max-height:300px">
+              </div>
+              <div class="column">
+                <img src="https://civicsensesst.altervista.org<?php echo $immagine2;?>" class="responsive" style="height:100%;max-height:300px">
+              </div>
+            </div>
+            <br>
             <br>
             <div id="map" class="embed-responsive embed-responsive-16by9 big-padding">
             </div>
@@ -181,27 +221,17 @@
     <script src="<?php __DIR__ ?>/../assets/js/jquery.min.js"></script>
     <script src="<?php __DIR__ ?>/../assets/bootstrap/js/bootstrap.min.js"></script>
     <script>
-      function count(field,maxlength,id){
-        var totalLength = field.value.length;
-        document.getElementById("caratteri_desc_rimanenti").innerHTML = maxlength-totalLength + " caratteri rimanenti";
-      }
-    </script>
-    <script>
     // Initialize and add the map
     function initMap() {
 
-      // var luru = new google.maps.LatLng(
-      //     parseFloat(document.getElementById("latitudine").value),
-      //     parseFloat(document.getElementById("longitudine").value));
-
       var lati = parseFloat(document.getElementById("latitudine").value);
       var longi = parseFloat(document.getElementById("longitudine").value);
-      // The location of Uluru
 
+      // The location of Uluru
       var uluru = {lat: lati, lng: longi};
 
       // The map, centered at Uluru
-      var map = new google.maps.Map(document.getElementById('map'), {zoom: 17, center: uluru});
+      var map = new google.maps.Map(document.getElementById('map'), {zoom: 16, center: uluru});
       // The marker, positioned at Uluru
       var marker = new google.maps.Marker({position: uluru, map: map});
 
@@ -220,8 +250,8 @@
            var tag = markerElem.getAttribute('tag');
            var point = new google.maps.LatLng(
                parseFloat(markerElem.getAttribute('latitudine')),
-               parseFloat(markerElem.getAttribute('longitudine')));
-
+               parseFloat(markerElem.getAttribute('longitudine'))
+            );
            var infowincontent = document.createElement('div');
            var strong = document.createElement('strong');
            strong.textContent = descrizione

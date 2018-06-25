@@ -11,14 +11,24 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
   exit;
 }
 
+if(!isset($_SESSION['ente'])){
+  echo "<br />";
+  echo "<br />";
+  echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+  echo "<br />";
+  echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+  header("refresh:3;url=".home_url());
+  die();
+}
+
 if($_SERVER["REQUEST_METHOD"] == "POST"){
   $id_gruppo = $_POST['id_gruppo'];
-  $sql = "UPDATE dipendente SET disponibilita = 1 WHERE username IN 
+  $sql = "UPDATE dipendente SET disponibilita = 1 WHERE username IN
   (SELECT username_dipendente FROM partecipazione WHERE id_gruppo_risoluzione = $id_gruppo)";
   if (mysqli_query($link,$sql)){
   } else{
     echo "Error: " . $sql . "<br>" . mysqli_error($link);
-  } 
+  }
   $sql1 = "UPDATE gruppo_risoluzione SET attivo = 0 WHERE id_gruppo_risoluzione=$id_gruppo";
   if (mysqli_query($link,$sql1)){
   } else{
@@ -42,13 +52,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form-1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
   </head>
 <body style = "background-color:#eef4f7">
@@ -87,9 +94,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     $id_gruppo = $row['id_gruppo_risoluzione'];
                     $sqldip = "SELECT username_dipendente FROM partecipazione WHERE id_gruppo_risoluzione = $id_gruppo";
                     $employe = mysqli_query($link,$sqldip);
-                    $row2 = mysqli_fetch_assoc($employe);
-                    $rowm = mysqli_fetch_row($employe);
-                    // stampa delle righe della tabella con i risultati della query
+                    $i=0;
+                    $nomi_dip="";
+					while ($row1 = mysqli_fetch_assoc($employe)) {
+                    	if ($i==0) {
+                        	$nomi_dip .= $row1['username_dipendente'];
+                        } else {
+                        	$nomi_dip .= ", ";
+                        	$nomi_dip .= $row1['username_dipendente'];
+                        }
+                        $i++;
+					}
                     if ($row['attivo'] == 1){
                       $active = "Attivo";
                     } else {
@@ -98,16 +113,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     echo "<tr>";
                       echo "<td>".$row['id_gruppo_risoluzione']."</td>";
                       echo "<td>".$active."</td>";
-                      echo "<td>".$row2['username_dipendente']." ..."."</td>";
+                      echo "<td>".$nomi_dip."</td>";
                       $id_gruppo = $row['id_gruppo_risoluzione'];
                       $attivo = $row['attivo'];
                       // se lo stato è 'In attesa di approvazione' rende possibile eliminazione e modifica
                       if ($attivo == 0){
                         echo "<td><button type=\"button\" class=\"btn btn-danger btn-sm\" data-toggle=\"modal\" data-target=\"#exampleModalCenter\" disabled>Elimina ✖</button></td>";
-                        echo "<td><button type=\"button\" class=\"btn btn-warning btn-sm\" disabled>Modifica ✏</button></td>";
                       } else{
                         echo "<td><button type=\"button\" class=\"btn btn-danger btn-sm\" data-toggle=\"modal\" data-target=\"#exampleModalCenter\" onclick=\"prendi_id_da_cancellare(".$id_gruppo.")\">Elimina ✖</button></td>";
-                        echo "<td><button type=\"button\" class=\"btn btn-warning btn-sm\" onclick=\"location.href='edit_group_agency.php?id=".$id_gruppo."'\">Modifica ✏</button></td>";
                       }
                       echo "<td><button type=\"button\" class=\"btn btn-primary btn-sm\" onclick=\"location.href='view_group_agency.php?id=".$id_gruppo."'\">Visualizza ➡</button></td>";
                     echo "</tr>";
@@ -117,8 +130,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 echo "</div>";
               } else {
                 echo "
-                  <p>Spiacenti ma non esistono enti da te creati.</p>
-
+                  <p>Spiacenti ma non esistono gruppi di risoluzione da te creati.</p>
                 ";
               }
             ?>

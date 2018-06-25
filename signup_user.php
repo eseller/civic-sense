@@ -135,7 +135,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     if(mysqli_stmt_execute($stmt)){         
                         session_start();
                         $_SESSION['username'] = $username;
-                        header("location: choose_activity_user.html");
+                        header("location: choose_activity_user.php");
                      } else{
                         echo "Errore nell'inserimento della mail nel database.";
                      }
@@ -169,13 +169,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <link rel="stylesheet" href="assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="assets/css/Forum---Thread-listing1.css">
+    
     <link rel="stylesheet" href="assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="assets/css/Pretty-Registration-Form-1.css">
+    
     <link rel="stylesheet" href="assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="assets/css/Sidebar-Menu1.css">
+    
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 

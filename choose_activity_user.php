@@ -1,3 +1,28 @@
+<?php
+
+  // Include config file
+  require_once 'config.php';
+
+  // Initialize the session
+  session_start();
+
+  // If session variable is not set it will redirect to login page
+  if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
+    header("location: login_user.php");
+    exit;
+  }
+
+  if(!isset($_SESSION['utente'])){
+    echo "<br />";
+    echo "<br />";
+    echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+    echo "<br />";
+    echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+    header("refresh:3;url=".home_url());
+    die();
+  }
+
+ ?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -24,7 +49,7 @@
         <div class="container">
           <div class="row justify-content-center features">
             <div class="col-sm-6 col-md-5 col-lg-4 item">
-              <div class="box" ><i class="fa fa-plus icon"></i>
+              <div class="box" ><em class="fa fa-plus icon"></em>
                 <h3 class="name">NUOVO TICKET</h3>
                 <p class="description">Permette di inserire una nuova
                   segnalazione di disservizio</p>
@@ -33,7 +58,7 @@
               </div>
             </div>
             <div class="col-sm-6 col-md-5 col-lg-4 item">
-              <div class="box"><i class="fa fa-gears icon"></i>
+              <div class="box"><em class="fa fa-gears icon"></em>
                 <h3 class="name">GESTISCI TICKET</h3>
                 <p class="description">Permette di visualizzare, modificare ed
                   eliminare un ticket precedentemente inserito</p>
@@ -41,7 +66,7 @@
               </div>
             </div>
             <div class="col-sm-6 col-md-5 col-lg-4 item">
-              <div class="box"><i class="fa fa-bar-chart icon"></i>
+              <div class="box"><em class="fa fa-bar-chart icon"></em>
                 <h3 class="name">VISUALIZZA STATISTICHE</h3>
                 <p class="description">Permette di visualizzare delle
                   statistiche sull'efficacia dello strumento e dei vari enti</p>

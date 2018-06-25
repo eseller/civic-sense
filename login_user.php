@@ -54,6 +54,9 @@
                             		//Ente
                               		session_start();
                               		$_SESSION['username'] = $username;
+																	$_SESSION['ente'] = 1;
+																	$_SESSION['utente'] = NULL;
+																	$_SESSION['dipendente'] = NULL;
                               		header("location: /ente/choose_activity_agency.php");
                               		// username found in utente
                             	} else {
@@ -62,7 +65,10 @@
                               		save the username to the session */
                               		session_start();
                               		$_SESSION['username'] = $username;
-                              		header("location: choose_activity_user.html");
+																	$_SESSION['utente'] = 1;
+																	$_SESSION['ente'] = NULL;
+																	$_SESSION['dipendente'] = NULL;
+                              		header("location: choose_activity_user.php");
                             	}
 	                        } else{
                             	// Display an error message if password is not valid
@@ -94,6 +100,9 @@
                   	                	if(password_verify($password, $hashed_password)){
                   	                  		session_start();
                   	                  		$_SESSION['username'] = $username;
+																					$_SESSION['dipendente'] = 1;
+																					$_SESSION['utente'] = NULL;
+																					$_SESSION['ente'] = NULL;
                   	                  		header("location: /dipendente/list_ticket_fordetails_employee.php");
                   	                  	} else {
                   	                  		// Display an error message if password is not valid
@@ -138,13 +147,13 @@
     <link rel="stylesheet" href="assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="assets/css/Forum---Thread-listing1.css">
+
     <link rel="stylesheet" href="assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="assets/css/Pretty-Registration-Form-1.css">
+
     <link rel="stylesheet" href="assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="assets/css/Sidebar-Menu1.css">
+
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 

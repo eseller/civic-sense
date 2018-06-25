@@ -11,6 +11,16 @@
     exit;
   }
 
+  if(!isset($_SESSION['ente'])){
+    echo "<br />";
+    echo "<br />";
+    echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+    echo "<br />";
+    echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+    header("refresh:3;url=".home_url());
+    die();
+  }
+
   $username_reale = $_SESSION['username'];
 
   // $sql2 = "SELECT * FROM ente";
@@ -37,7 +47,6 @@
       //   return false;
       // }
     // }
-    // echo "non entra nel ciclo";
     // mysqli_close($link);
   //   return true;
   // }
@@ -57,13 +66,10 @@
   <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
   <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
   <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing.css">
-  <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing1.css">
   <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Clean.css">
   <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form.css">
-  <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form-1.css">
   <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Dark.css">
   <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu.css">
-  <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu1.css">
   <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
 </head>
 <body style = "background-color:#eef4f7">
@@ -75,6 +81,7 @@
       <div class="col-sm-12 col-lg-11 mx-auto">
         <div class="intro">
           <h2 class="text-center">Civic Sense</h2>
+          <p class="text-center">Scelta attività dell'ente <strong><?php echo $_SESSION['username']; ?></strong></p>
         </div>
       </div>
       <div class="container">

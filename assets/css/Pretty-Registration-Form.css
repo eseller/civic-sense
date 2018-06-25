@@ -22,7 +22,7 @@
   font-weight:bold;
   padding:0 10px 15px;
   margin-bottom:60px;
-  border-bottom:2px solid #5547f4;
+  border-bottom:2px solid rgb(108, 174, 224);
 }
 
 .register-form .custom-form .form-group {
@@ -87,4 +87,3 @@
   margin:30px;
   outline:none;
 }
-

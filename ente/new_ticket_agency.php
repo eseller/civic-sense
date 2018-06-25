@@ -11,9 +11,24 @@
     exit;
   }
 
+  if(!isset($_SESSION['ente'])){
+    echo "<br />";
+    echo "<br />";
+    echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+    echo "<br />";
+    echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+    header("refresh:3;url=".home_url());
+    die();
+  }
+
   $username_reale = $_SESSION['username'];
   $descrizione = $indirizzo = $tag = $gravitabox = $data = $citta = $provincia = $latitudine = $longitudine = "";
   $descrizione_err = $latitudine_err = "";
+
+  $sqlente = "SELECT tag FROM ente WHERE username LIKE '$username_reale'";
+  $resultente = mysqli_query($link,$sqlente);
+  $row = mysqli_fetch_assoc($resultente);
+  $tagente = $row['tag'];
 
   // ID Ticket
   $sql = "SELECT MAX(id_ticket) FROM ticket";
@@ -23,6 +38,7 @@
 
 
   if($_SERVER["REQUEST_METHOD"] == "POST"){
+    $id_ticket++;
     // Check if descrizione is empty
     if(empty(trim($_POST["descrizione"]))){
         $descrizione_err = 'Inserire una descrizione.';
@@ -30,7 +46,6 @@
         $descrizione = trim($_POST["descrizione"]);
     }
     $indirizzo = trim($_POST['indirizzo']);
-    $tag = trim($_POST["tag"]);
     $gravitabox = trim($_POST["gravitabox"]);
     $data = date('Y-m-d');
     $citta = trim($_POST["citta"]);
@@ -41,10 +56,10 @@
       (descrizione,provincia,data,latitudine,longitudine,citta,
       indirizzo,tag,gravita,segnalatore,stato)
       VALUES
-      ('$descrizione','$provincia','$data','$latitudine','$longitudine','$citta','$indirizzo','$tag','$gravitabox',
-      '$username','In attesa di approvazione')";
+      ('$descrizione','$provincia','$data','$latitudine','$longitudine','$citta','$indirizzo','$tagente','$gravitabox',
+      '$username_reale','In attesa di approvazione')";
       if (mysqli_query($link, $sql)) {
-      header("location: choose_activity_agency.php");
+      header("location: view_ticket_agency.php?id=".$id_ticket);
     } else {
       echo "Error: " . $sql . "<br>" . mysqli_error($link);
     }
@@ -101,13 +116,10 @@
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form-1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
   </head>
   <body onload="showdate()" style = "background-color:#eef4f7">
@@ -176,7 +188,9 @@
             </div>
             <div class="col-sm-6 col-lg-3">
                 <div class="select-group"><label>Tag <font color="red">*</font></label>
-                  <div class="dropdown">
+                  <input disabled="true" class="form-control" readonly="readonly" id="tag" 
+                  placeholder="<?php echo $tagente; ?>">
+              <!--   <div class="dropdown">
                     <select class="custom-select" name="tag" required disabled>
                       <option value="">Tag</option>
                       <?php
@@ -189,7 +203,7 @@
                         }
                       ?>
                     </select>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             <div class="col-sm-6 col-lg-3">
@@ -209,18 +223,6 @@
             </div>
           </div>
           <br>
-          <div class="form-row justify-content-center">
-            <label>Immagini relative alla segnalazione</label>
-          </div>
-          <br>
-          <div class="form-row justify-content-center">
-            <div class="col-sm-2 col-lg-3">
-              <input type="file" name="myFile1" id="pic1">
-            </div>
-            <div class="col-sm-2 col-lg-3">
-              <input type="file" name="myFile2" id="pic2">
-            </div>
-          </div>
           <div class="form-row">
             <label style="visibility:hidden">Label</label>
           </div>
@@ -249,7 +251,7 @@
           <br>
           <div class="form-row justify-content-center">
             <div class="col-sm-4 col-lg-3">
-              <button class="btn btn-success btn-block" id="creaticket" type="submit">Crea ticket</button>
+              <button class="btn btn-success btn-block" id="creaticket" disabled="true" type="submit">Crea ticket</button>
             </div>
             <div class="col-sm-4 col-lg-3">
               <button onclick="location.href='choose_activity_agency.php'" type="button" class="btn btn-danger btn-block">Annulla</button>

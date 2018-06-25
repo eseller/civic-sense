@@ -33,8 +33,8 @@
   $gravita = $row['gravita'];
   $stato = $row['stato'];
   $report = $row['report'];
-
-
+  $immagine1 = $row['immagine1'];
+  $immagine2 = $row['immagine2'];
 ?>
 
 <!DOCTYPE html>
@@ -51,16 +51,35 @@
     <link rel="stylesheet" href="assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="assets/css/Forum---Thread-listing1.css">
+    
     <link rel="stylesheet" href="assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="assets/css/Pretty-Registration-Form-1.css">
+    
     <link rel="stylesheet" href="assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="assets/css/Sidebar-Menu1.css">
+    
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="css/responsive.css">
     <style>
+	    .responsive {
+	    width: 100%;
+	    height: auto;
+			}
+    * {
+    box-sizing: border-box;
+			}
+			.column {
+				text-align: center;
+		    float: left;
+		    width: 33.33%;
+		    padding: 5px;
+			}
+			/* Clearfix (clear floats) */
+			.row::after {
+		    content: "";
+		    clear: both;
+		    display: table;
+			}
        /* Set the size of the div element that contains the map */
       #map {
         height: 400px;  /* The height is 400 pixels */
@@ -172,11 +191,22 @@
                 <textarea readonly class="form-control" type="text" rows="4"><?php echo $report; ?></textarea>
               </div>
             </div>
-
+            <br>
+            <div class="form-row justify-content-center">
+	          	<label>Immagini Allegate</label>
+	          </div>
+          	<div class="row justify-content-center">
+          		<div class="column">
+              	<img src="<?php echo $immagine1;?>" class="responsive" style="height:100%;max-height:300px">
+          		</div>
+              <div class="column">
+                <img src="<?php echo $immagine2;?>" class="responsive" style="height:100%;max-height:300px">
+              </div>
+            </div>
+            <br>
             <br>
             <div id="map" class="embed-responsive embed-responsive-16by9 big-padding">
             </div>
-
             <br>
             <br>
               <button class="btn btn-danger btn-block" type="button" onclick="location.href='list_ticket_fordetails_user.php'">Indietro</button>

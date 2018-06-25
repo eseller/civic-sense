@@ -7,92 +7,50 @@ session_start();
 
 // If session variable is not set it will redirect to login page
 if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
-  header("location: https://civicsensesst.altervista.org/login_admin.php");
+  header("location: https://civicsensesst.altervista.org/login_user.php");
   exit;
 }
 
 $username = $_SESSION['username'];
-$username_ente = $nome = $tag = $citta = $provincia = $ente_err = "";
+$username_dipendente = $tag = $citta = $provincia = $disponibilita = $nome = $cognome = $dipendente_err = "";
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
- 
+
+$sql = "SELECT tag FROM ente WHERE username = '$username'";
+  if (mysqli_query($link, $sql)) {
+      $result = mysqli_query($link, $sql);
+      $row = mysqli_fetch_assoc($result);
+      $tag = $row['tag'];
+    
+  }else {
+          echo "Error: " . $sql . "<br>" . mysqli_error($link);
+            }  
+  $disponibilita = 1;
+  $username_dipendente = trim($_POST['username_dipendente']);
   $nome = trim($_POST['nome']);
-  $username_ente = trim($_POST['username_ente']);
-  $tag = trim($_POST["tag"]);
+  $cognome = trim($_POST['cognome']);
   $citta = trim($_POST["citta"]);
   $provincia = trim($_POST['provincia']);
 
-  $sql = "SELECT nome FROM tag WHERE nome = '$tag'";
+  $sql = "SELECT username FROM dipendente WHERE username = '$username_dipendente'";
   if (mysqli_query($link, $sql)) {
               $result = mysqli_query($link, $sql);
               $valori = mysqli_num_rows($result);
               if ($valori == 0) {
-                // Il tag non esiste, quindi può generare l'ente e il tag
-                $sql = "INSERT IGNORE INTO tag (nome) VALUES ('$tag')";
+                // Il dipendente non esiste, quindi può generarlo
+                $sql = "INSERT INTO dipendente (username, tag, disponibilita, citta, provincia, nome, cognome) VALUES ('$username_dipendente', '$tag', '$disponibilita', '$citta', '$provincia', '$nome', '$cognome')";
                   if (mysqli_query($link, $sql)) {  
-                    $sql = "INSERT INTO segnalatore (username) VALUES ('$username_ente')";
-                      if (mysqli_query($link, $sql)) {    
-                        $sql = "INSERT INTO ente
-                        (username, nome, provincia, citta, tag, username_responsabile)
-                        VALUES
-                        ('$username_ente', '$nome', '$provincia','$citta','$tag','$username')";
-                        if (mysqli_query($link, $sql)) {
-                          header("location: view_agency_admin.php?id=".$username_ente);
-                        } else {
-                          echo "Error: " . $sql . "<br>" . mysqli_error($link);
-                        }
-                      } else {
-                        echo "Error: " . $sql . "<br>" . mysqli_error($link);
-                      }  
+                        header("location: list_employee.php");
                       } else {
                     echo "Error: " . $sql . "<br>" . mysqli_error($link);
                   } 
               } else {
-                // Controlla se esiste un ente con la stessa combinazione di tag e provincia
-                $sql = "SELECT * FROM ente WHERE tag = '$tag' AND provincia = '$provincia'";
-                if (mysqli_query($link, $sql)) {
-                  $result = mysqli_query($link, $sql);
-                  $valori = mysqli_num_rows($result);
-                  if ($valori > 0) {
-                    //Segnala che l'ente esiste già
-                    $ente_err = "Impossibile creare l'ente. Esiste già un ente con la stessa combinazione di provincia e tag.";
-                   }
-                   else {
-                    // Non esiste un ente con la stessa combinazione di tag e provincia, quindi genera l'ente
-                    $sql = "INSERT IGNORE INTO tag (nome) VALUES ('$tag')";
-                      if (mysqli_query($link, $sql)) {  
-                        $sql = "INSERT INTO segnalatore (username) VALUES ('$username_ente')";
-                          if (mysqli_query($link, $sql)) {    
-                            $sql = "INSERT INTO ente
-                            (username, nome, provincia, citta, tag, username_responsabile)
-                            VALUES
-                            ('$username_ente', '$nome', '$provincia','$citta','$tag','$username')";
-                            if (mysqli_query($link, $sql)) {
-                              header("location: view_agency_admin.php?id=".$username_ente);
-                            } else {
-                              echo "Error: " . $sql . "<br>" . mysqli_error($link);
-                            }
-                          } else {
-                            echo "Error: " . $sql . "<br>" . mysqli_error($link);
-                          }  
-                          } else {
-                        echo "Error: " . $sql . "<br>" . mysqli_error($link);
-                      } 
-                  }
-
-                } else {
-                  echo "Error: " . $sql . "<br>" . mysqli_error($link);
-                }
+                $dipendente_err = "Questo dipendente esiste già.";
               }
-
             } else {
                   echo "Error: " . $sql . "<br>" . mysqli_error($link);
                 }
 
-
-    
-
-      
   mysqli_close($link);
 
 }
@@ -129,38 +87,23 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             <div class="col-sm-12 col-lg-11 mx-auto">
               <div class="form-group">
                 <div class="intro">
-                  <h2 class="text-center">Nuovo Ente</h2>
-                  <p class="text-center">Crea un nuovo ente</p>
+                  <h2 class="text-center">Nuovo Dipendente</h2>
+                  <p class="text-center">Crea un nuovo dipendente</p>
                 </div>
               </div>
             </div>
           </div>
           <div class="form-row justify-content">
-            <label class="col-form-label">Nome</label><input class="form-control" name="nome" type="text" required>
+            <label class="col-form-label">Username</label><input class="form-control" name="username_dipendente" type="text" required>
+            <span class="help-block"><?php echo $dipendente_err; ?></span>
           </div>
           <div class="form-row justify-content-center">
             <div class="col-sm-6 col-lg-5">
-              <div class="form-group"><label>Username</label><input class="form-control" name ="username_ente" type="text" required></div>
+              <div class="form-group"><label>Nome</label><input class="form-control" name ="nome" type="text" required></div>
             </div>
             <div class="col-sm-6 col-lg-3">
-              <div class="form-group"><label>Tag</label><input class="form-control" type="text" name="tag" required></div>
+              <div class="form-group"><label>Cognome</label><input class="form-control" type="text" name="cognome" required></div>
             </div>
-<!--               <div class="select-group"><label>Tag</label>
-                <div class="dropdown">
-                  <select class="custom-select" name="tag" required>
-                    <option value="">Tag</option>
-                    <?php
-                        $sql = "SELECT nome FROM tag";
-                        $result = mysqli_query($link, $sql);
-                        while ($row = mysqli_fetch_assoc($result)) {
-                          echo "<option value=\"" .($row['nome']). "\"";
-                          if($tag==$row['nome']) echo ' selected="selected" ';
-                          echo ">".$row['nome']."</option>";
-                        }
-                    ?>
-                  </select>
-                </div>
-              </div> -->
           </div>
           <div class="form-row justify-content-center"><br>
             <div class="col-sm-3">
@@ -184,17 +127,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 </select>
                <span style="color:#FF2D00" class="help-block"><?php echo $provincia_err;?></span>
             </div>
-            <span class="help-block"><?php echo $ente_err; ?></span>
             </div>
           </div>
           <br>
           
           <div class="form-row justify-content-center">
             <div class="col-sm-4 col-lg-3">
-              <button class="btn btn-success btn-block" id="creaticket" type="submit">Crea ente</button>
+              <button class="btn btn-success btn-block" id="creaticket" type="submit">Crea dipendente</button>
             </div>
             <div class="col-sm-4 col-lg-3">
-              <button onclick="location.href='choose_activity_admin.php'" type="button" class="btn btn-danger btn-block">Annulla</button>
+              <button onclick="location.href='choose_activity_agency.php'" type="button" class="btn btn-danger btn-block">Annulla</button>
             </div>
           </div>
           <br>

@@ -11,42 +11,48 @@
     exit;
   }
 
-  $id_ticket = $_GET['id'];
+  if($_SERVER["REQUEST_METHOD"] == "GET"){
 
-  $sql = "SELECT * FROM ticket WHERE id_ticket=58";
-  $result = mysqli_query($link, $sql);
-  $row = mysqli_fetch_assoc($result);
+    $id_ticket = $_GET['id'];
 
-  $descrizione= $row['descrizione'];
-  $data = $row['data'];
-  $latitude = $row['latitudine'];
-  $longitude = $row['longitudine'];
-  $provincia = $row['provincia'];
-  $citta = $row['citta'];
-  $indirizzo = $row['indirizzo'];
-  $tag = $row['tag'];
-  $gravita = $row['gravita'];
-  $segnalatore_reale = $row['segnalatore'];
+    $sql = "SELECT * FROM ticket WHERE id_ticket=$id_ticket";
+    $result = mysqli_query($link, $sql);
+    $row = mysqli_fetch_assoc($result);
 
-  // function utente_impostore($segnalatore_reale_prova){
-  //   $sql1 = "SELECT username FROM ente";
-  //   $result1 = mysqli_query($link, $sql1);
-  //   $row1 = mysqli_fetch_assoc($result1);
-  //
-  //   foreach ($variable as $row1) {
-  //     if($variabile['username']==$_SESSION['username']){
-  //       $trovato = 1;
-  //     }
-  //   }
-  //   if($trovato==1){
-  //     return false;
-  //   } else {
-  //     mysqli_close($link);
-  //     return true;
-  //   }
-  // }
+    $descrizione= $row['descrizione'];
+    $data = $row['data'];
+    $latitude = $row['latitudine'];
+    $longitude = $row['longitudine'];
+    $provincia = $row['provincia'];
+    $citta = $row['citta'];
+    $indirizzo = $row['indirizzo'];
+    $tag = $row['tag'];
+    $gravita = $row['gravita'];
+    $segnalatore_reale = $row['segnalatore'];
+
+    if(!isset($_SESSION['ente']) || $segnalatore_reale != $_SESSION['username']){
+      echo "<br />";
+      echo "<br />";
+      echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+      echo "<br />";
+      echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+      header("refresh:3;url=".home_url());
+      die();
+    }
+
+  }
 
   if($_SERVER["REQUEST_METHOD"] == "POST"){
+
+    if(!isset($_SESSION['ente'])){
+      echo "<br />";
+      echo "<br />";
+      echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+      echo "<br />";
+      echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+      header("refresh:3;url=".home_url());
+      die();
+    }
 
     // Define variables and initialize with empty values
     $descrizione = $id_ticket = $tag = $provincia = $gravita = $id_ticket_err = $descrizione_err = $tag_err = $provincia_err = $gravita_err = "";
@@ -111,13 +117,10 @@
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form-1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
   </head>
 <body style = "background-color:#eef4f7">

@@ -11,6 +11,16 @@
     exit;
   }
 
+  if(!isset($_SESSION['ente'])){
+    echo "<br />";
+    echo "<br />";
+    echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+    echo "<br />";
+    echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+    header("refresh:3;url=".home_url());
+    die();
+  }
+
   if($_SERVER["REQUEST_METHOD"] == "POST"){
     $id_ticket = $_POST['id_ticket'];
     $sql = "DELETE FROM ticket WHERE id_ticket = $id_ticket";
@@ -35,7 +45,7 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
-    <title>Visualizza Segnalazioni da risolvere</title>
+    <title>Segnalazioni da risolvere</title>
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/fonts/ionicons.min.css">
@@ -44,14 +54,19 @@
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form-1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
+    <style>
+       /* Set the size of the div element that contains the map */
+      #map {
+        height: 400px;  /* The height is 400 pixels */
+        width: 100%;  /* The width is the width of the web page */
+        background-color: beige;
+       }
+    </style>
   </head>
 <body style = "background-color:#eef4f7">
     <div class="features-boxed">
@@ -70,6 +85,10 @@
 
               // se la query produce righe, costruisco la tabella
               if ($valori>0) {
+
+                echo "<div id=\"map\" class=\"embed-responsive embed-responsive-16by9 big-padding\"></div>
+                <br><br>";
+
                 // stampa la tabella
                 echo "<div class=\"table-responsive\">";
                   echo "<table class=\"table table-hover \">";
@@ -85,7 +104,7 @@
                     echo "<tbody>";
                   while ($row = mysqli_fetch_assoc($result)) {
                     // stampa delle righe della tabella con i risultati della query
-                    if ($row['stato']=="Invalidato") {
+                    if ($row['stato']=="Invalidato" || $row['stato']=="Irrisolto" || $row['stato']=="Risolto") {
                       echo "<tr>";
                     }elseif($row['gravita']=="Alta"){
                       echo "<tr class=\"table-danger\">";
@@ -128,23 +147,119 @@
           </form>
           <script src="<?php __DIR__ ?>/../assets/js/jquery.min.js"></script>
           <script src="<?php __DIR__ ?>/../assets/bootstrap/js/bootstrap.min.js"></script>
+
+          <!-- script per la mappa -->
           <script>
-            function invia_dati(servURL, params, method) {
-              method = method || "post"; // il metodo POST è usato di default
-              var form = document.createElement("form");
-              form.setAttribute("method", method);
-              form.setAttribute("action", servURL);
-              for(var key in params) {
-                  var hiddenField = document.createElement("input");
-                  hiddenField.setAttribute("type", "hidden");
-                  hiddenField.setAttribute("name", key);
-                  hiddenField.setAttribute("value", params[key]);
-                  form.appendChild(hiddenField);
-              }
-              document.body.appendChild(form);
-              form.submit();
+            // Initialize and add the map
+            function initMap() {
+
+              // The location of Uluru
+              var uluru = {lat: 10, lng: 10};
+
+              // The map, centered at Uluru
+              // var map = new google.maps.Map(document.getElementById('map'), {zoom: 9, center: uluru});
+              var map = new google.maps.Map(document.getElementById('map'), {center: uluru});
+
+              var infoWindow = new google.maps.InfoWindow;
+
+              var latiTot = 0;
+              var longiTot = 0;
+              var i = 0;
+
+              var bounds = new google.maps.LatLngBounds;
+
+               // Change this depending on the name of your PHP or XML file
+                downloadUrl('xml/gen_xml_global_map.php?tag=<?php echo $tag; ?>&prov=<?php echo $provincia; ?>', function(data) {
+
+                 var xml = data.responseXML;
+                 var markers = xml.documentElement.getElementsByTagName('marker');
+                 Array.prototype.forEach.call(markers, function(markerElem) {
+                   var descrizione = markerElem.getAttribute('descrizione');
+                   var data = markerElem.getAttribute('data');
+                   var gravita = markerElem.getAttribute('gravita');
+                   var tag = markerElem.getAttribute('tag');
+                   var id = markerElem.getAttribute('id');
+                   var point = new google.maps.LatLng(
+                       parseFloat(markerElem.getAttribute('latitudine')),
+                       parseFloat(markerElem.getAttribute('longitudine'))
+                    );
+                    // latiTot += parseFloat(markerElem.getAttribute('latitudine'));
+                    // longiTot += parseFloat(markerElem.getAttribute('longitudine'));
+                    // i++;
+
+                   var infowincontent = document.createElement('div');
+                   var strong = document.createElement('strong');
+                   strong.textContent = descrizione;
+                   infowincontent.appendChild(strong);
+                   infowincontent.appendChild(document.createElement('br'));
+
+                   var text = document.createElement('text');
+                   text.textContent = "Gravità: "+gravita;
+                   infowincontent.appendChild(text);
+                   infowincontent.appendChild(document.createElement('br'));
+
+                   var text1 = document.createElement('text');
+                   text1.textContent = data;
+                   infowincontent.appendChild(text1);
+                   infowincontent.appendChild(document.createElement('br'));
+
+                   var link = document.createElement('a');
+                   var t = document.createTextNode("Apri");
+                   link.setAttribute('href', "assign_team.php?id="+id);
+                   link.appendChild(t);
+                   infowincontent.appendChild(link);
+                   // var icon = customLabel[type] || {};
+                   var marker = new google.maps.Marker({
+                     map: map,
+                     position: point,
+                     // label: icon.label
+                   });
+
+                   bounds.extend(marker.position);
+
+                   marker.addListener('click', function() {
+                     infoWindow.setContent(infowincontent);
+                     infoWindow.open(map, marker);
+                   });
+                 });
+               });
+
+               map.fitBounds(bounds);
+
+               // map.panToBounds(bounds);
+
+               var listener = google.maps.event.addListener(map, "idle", function () {
+                   map.setZoom(7);
+                   google.maps.event.removeListener(listener);
+               });
+
+              // var latiMedia = latiTot / i;
+              // var longiMedia = longiTot / i;
+              // var center = new google.maps.LatLng(parseInt(latiMedia), parseInt(longiMedia));
+
+              // map.setCenter(center);
+             }
+
+
+            function downloadUrl(url, callback) {
+             var request = window.ActiveXObject ?
+                 new ActiveXObject('Microsoft.XMLHTTP') :
+                 new XMLHttpRequest;
+
+             request.onreadystatechange = function() {
+               if (request.readyState == 4) {
+                 request.onreadystatechange = doNothing;
+                 callback(request, request.status);
+               }
+             };
+
+             request.open('GET', url, true);
+             request.send(null);
             }
+
+            function doNothing() {}
           </script>
+          <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2-9hld_I3B-CWHMUKzRmkUDr75_p1VCI&callback=initMap" type="text/javascript"></script>
           <script src="<?php __DIR__ ?>/../assets/js/Contact-FormModal-Contact-Form-with-Google-Map.js"></script>
           <script src="<?php __DIR__ ?>/../assets/js/Sidebar-Menu.js"></script>
           </div>

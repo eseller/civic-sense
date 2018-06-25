@@ -14,7 +14,7 @@
 
     $id_ticket = $_GET['id'];
 
-    $sql = "SELECT * FROM ticket WHERE id_ticket=124";
+    $sql = "SELECT * FROM ticket WHERE id_ticket=$id_ticket";
     $result = mysqli_query($link, $sql);
     $row = mysqli_fetch_assoc($result);
 

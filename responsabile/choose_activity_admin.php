@@ -49,15 +49,15 @@
         </div>
       </div>
     </div>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/js/jquery.min.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript">
       $(".box").click(function(){
       window.location=$(this).find("a").attr("href");
       return false;
       });
     </script>
-    <script src="assets/js/Contact-FormModal-Contact-Form-with-Google-Map.js"></script>
-    <script src="assets/js/Sidebar-Menu.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/js/Contact-FormModal-Contact-Form-with-Google-Map.js"></script>
+    <script src="<?php __DIR__ ?>/../assets/js/Sidebar-Menu.js"></script>
   </body>
 </html>

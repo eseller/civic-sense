@@ -136,6 +136,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 // Attempt to execute the prepared statement
                 if(mysqli_stmt_execute($stmt)){
                     // Effettua il login come ente e vai alla choose activity agency
+                    $_SESSION['ente'] = 1;
+					$_SESSION['utente'] = NULL;
+					$_SESSION['dipendente'] = NULL;
                     session_start();
                     $_SESSION['username'] = $username;
                     header("location: ente/choose_activity_agency.php");
@@ -160,6 +163,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 // Attempt to execute the prepared statement
                 if(mysqli_stmt_execute($stmt)){
                     // Effettua il login come dipendente e vai alla scelta della mail
+                    $_SESSION['ente'] = NULL;
+					$_SESSION['utente'] = NULL;
+					$_SESSION['dipendente'] = 1;
                     session_start();
                     $_SESSION['username'] = $username;
                     header("location: dipendente/choose_mail_employee.php");
@@ -193,13 +199,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <link rel="stylesheet" href="assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="assets/css/Forum---Thread-listing1.css">
+    
     <link rel="stylesheet" href="assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="assets/css/Pretty-Registration-Form-1.css">
+    
     <link rel="stylesheet" href="assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="assets/css/Sidebar-Menu1.css">
+    
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 

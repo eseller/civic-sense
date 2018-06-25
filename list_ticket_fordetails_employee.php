@@ -48,7 +48,7 @@ require_once __DIR__.'/../config.php';
 
               // preparazione della query che ricava gli id delle segnalazioni dell'utente
               $username = $_SESSION['username'];
-              $sql = "SELECT id_ticket, data, gravita FROM ticket WHERE id_gruppo_risoluzione IN (SELECT id_gruppo_risoluzione FROM partecipazione WHERE username_dipendente = '$username') AND stato = 'Preso in carico'";
+              $sql = "SELECT id_ticket, data, gravita FROM ticket WHERE id_gruppo_risoluzione IN (SELECT id_gruppo_risoluzione FROM partecipazione WHERE username_dipendente = '$username')";
               $result = mysqli_query($link, $sql);
               $valori = mysqli_num_rows($result);
 
@@ -93,7 +93,7 @@ require_once __DIR__.'/../config.php';
 
             <div class="form-row justify-content-center">
               <div class="col-sm-4 col-lg-5">
-                 <button class="btn btn-dark btn-block" type="button" onclick="location.href='https://civicsensesst.altervista.org/login_user.php'">Indietro</button>
+<!--                 <button class="btn btn-dark btn-block" type="button" onclick="location.href='https://civicsensesst.altervista.org/index.html'">Indietro</button> -->
               </div>
             </div>
             <br>

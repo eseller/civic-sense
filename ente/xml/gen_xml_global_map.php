@@ -12,30 +12,39 @@
     $node = $dom->createElement("markers");
     $parnode = $dom->appendChild($node);
 
-    $id_ticket = $_GET['id'];
+    $provincia = $_GET['prov'];
+    $tag = $_GET['tag'];
 
-    $sql = "SELECT * FROM ticket WHERE id_ticket=$id_ticket";
-    $result = mysqli_query($link, $sql);
-    $row = mysqli_fetch_assoc($result);
 
     header("Content-type: text/xml");
 
-    $node = $dom->createElement("marker");
-    $newnode = $parnode->appendChild($node);
 
-    $newnode->setAttribute("descrizione", $row['descrizione']);
-    $newnode->setAttribute("data", $row['data']);
-    $newnode->setAttribute("latitudine", $row['latitudine']);
-    $newnode->setAttribute("longitudine", $row['longitudine']);
-    $newnode->setAttribute("provincia", $row['provincia']);
-    $newnode->setAttribute("citta", $row['citta']);
-    $newnode->setAttribute("indirizzo",$row['indirizzo']);
-    $newnode->setAttribute("tag",$row['tag']);
-    $newnode->setAttribute("gravita", $row['gravita']);
-    $newnode->setAttribute("stato", $row['stato']);
-    $newnode->setAttribute("report", $row['report']);
+    $sql = "SELECT * FROM ticket WHERE provincia LIKE '$provincia' AND tag LIKE '$tag'";
+
+    $result = mysqli_query($link, $sql);
+
+    while ($row = mysqli_fetch_assoc($result)) {
+
+      $node = $dom->createElement("marker");
+      $newnode = $parnode->appendChild($node);
+
+      $newnode->setAttribute("id", $row['id_ticket']);
+      $newnode->setAttribute("descrizione", $row['descrizione']);
+      $newnode->setAttribute("data", $row['data']);
+      $newnode->setAttribute("latitudine", $row['latitudine']);
+      $newnode->setAttribute("longitudine", $row['longitudine']);
+      $newnode->setAttribute("provincia", $row['provincia']);
+      $newnode->setAttribute("citta", $row['citta']);
+      $newnode->setAttribute("indirizzo",$row['indirizzo']);
+      $newnode->setAttribute("tag",$row['tag']);
+      $newnode->setAttribute("gravita", $row['gravita']);
+      $newnode->setAttribute("stato", $row['stato']);
+      $newnode->setAttribute("report", $row['report']);
+
+    }
 
     echo $dom->saveXML();
+
   }
 
 ?>

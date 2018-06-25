@@ -11,6 +11,16 @@
     exit;
   }
 
+  if(!isset($_SESSION['dipendente'])){
+    echo "<br />";
+    echo "<br />";
+    echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+    echo "<br />";
+    echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+    header("refresh:3;url=".home_url());
+    die();
+  }
+
   $id_ticket = $_GET['id'];
 
   $sql = "SELECT * FROM ticket WHERE id_ticket = $id_ticket";
@@ -76,8 +86,34 @@
       $sql = "UPDATE ticket SET report='$report', stato='$stato' WHERE id_ticket = $id_ticket";
       $result = mysqli_query($link, $sql);
 
-      header("location:list_global_ticket.php");
     }
+    elseif (!empty($_POST['risolvi_ticket'])) {
+
+      $stato = $stato_err = "";
+
+      // Check if gravità is empty
+      if(empty(trim($_POST['stato']))){
+          $stato_err = 'Inserire lo stato.';
+      } else{
+          $stato = trim($_POST['stato']);
+          echo trim($_POST['stato']);
+      }
+
+      // Check if report is empty
+      if(empty(trim($_POST['report']))){
+          $report_err = 'Inserire il report.';
+      } else{
+          $report = trim($_POST['report']);
+      }
+
+      $id_ticket = trim($_POST['id_ticket']);
+
+      $sql = "UPDATE ticket SET report='$report', stato='$stato' WHERE id_ticket = $id_ticket";
+      $result = mysqli_query($link, $sql);
+    }
+
+  header("location: list_ticket_fordetails_employee.php");
+
   }
 
 ?>
@@ -96,13 +132,13 @@
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing1.css">
+
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form-1.css">
+
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu1.css">
+
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
     <style>
        /* Set the size of the div element that contains the map */

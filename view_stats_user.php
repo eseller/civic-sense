@@ -30,13 +30,13 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
     <link rel="stylesheet" href="assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="assets/css/Forum---Thread-listing1.css">
+    
     <link rel="stylesheet" href="assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="assets/css/Pretty-Registration-Form-1.css">
+    
     <link rel="stylesheet" href="assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="assets/css/Sidebar-Menu1.css">
+    
     <link rel="stylesheet" href="assets/css/styles.css">
     <style type="text/css">
       #chart-container {
@@ -149,7 +149,7 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
       </div>
       <div class="form-row justify-content-center">
         <div class="col-sm-4 col-lg-3">
-          <button onclick="location.href='choose_activity_user.html'" type="button" class="btn btn-danger btn-block">Indietro</button>
+          <button onclick="location.href='choose_activity_user.php'" type="button" class="btn btn-danger btn-block">Indietro</button>
         </div>
       </div>
       <br>

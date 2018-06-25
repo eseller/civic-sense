@@ -79,13 +79,13 @@
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing1.css">
+    
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form-1.css">
+  
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu1.css">
+    
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
   </head>
 <body style = "background-color:#eef4f7">
@@ -182,8 +182,8 @@
             <br>
             <br>
           </form>
-          <script src="assets/js/jquery.min.js"></script>
-          <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+          <script src="<?php __DIR__ ?>/../assets/js/jquery.min.js"></script>
+          <script src="<?php __DIR__ ?>/../assets/bootstrap/js/bootstrap.min.js"></script>
           <script>
             function prendi_id_da_cancellare(id) {
               document.getElementById("modal-body").innerHTML = "Stai eliminando l'ente "+ id +". Cosa vuoi fare?";
@@ -211,8 +211,8 @@
               form.submit();
             }
           </script>
-          <script src="assets/js/Contact-FormModal-Contact-Form-with-Google-Map.js"></script>
-          <script src="assets/js/Sidebar-Menu.js"></script>
+          <script src="<?php __DIR__ ?>/../assets/js/Contact-FormModal-Contact-Form-with-Google-Map.js"></script>
+          <script src="<?php __DIR__ ?>/../assets/js/Sidebar-Menu.js"></script>
           </div>
         </div>
       </div>

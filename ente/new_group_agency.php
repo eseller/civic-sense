@@ -10,15 +10,29 @@ if(!isset($_SESSION['username']) || empty($_SESSION['username'])){
   header("location: ".home_url()."login_user.php");
   exit;
 }
+
+if(!isset($_SESSION['ente'])){
+  echo "<br />";
+  echo "<br />";
+  echo "<center><h1>Non hai formulato una richiesta valida</h1></center>";
+  echo "<br />";
+  echo "<center><h3>Sarai reindirizzato alla homepage</h3></center>";
+  header("refresh:3;url=".home_url());
+  die();
+}
+
 // Username Ente
 $username_agency = $_SESSION['username'];
 // Selezione ultimo id immesso relativo ai gruppi
-$sql = "SELECT MAX(id_gruppo_risoluzione) FROM gruppo_risoluzione";
-$result = mysqli_query($link, $sql);
-$row = mysqli_fetch_assoc($result);
-$id_gruppo_risoluzione = $row['MAX(id_gruppo_risoluzione)'];
-$id_gruppo_risoluzione++;
-
+function maxidgruppo(){
+  include __DIR__.'/../config.php';
+  $sql = "SELECT MAX(id_gruppo_risoluzione) FROM gruppo_risoluzione";
+  $result = mysqli_query($link, $sql);
+  $row = mysqli_fetch_assoc($result);
+  $id_gruppo_risoluzione = $row['MAX(id_gruppo_risoluzione)'];
+  return $id_gruppo_risoluzione;
+}
+$id_gruppo_risoluzione=maxidgruppo()+1;
 // Check Empty
 if($_SERVER["REQUEST_METHOD"] == "POST"){
   if (empty(trim($_POST["dip1"])) &&
@@ -29,69 +43,181 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
       empty(trim($_POST["dip6"]))){
     $at_least_err = 'Inserisci almeno un dipendente.';
   } else{
-    // Controllo esistenza dipendente
-    if (!empty(trim($_POST["dip1"]))){
-      $dipendente1 = $_POST["dip1"];
-      $sqlcheck1="SELECT username FROM dipendente WHERE username='$dipendente1'";
-      if (mysqli_query($link,$sqlcheck1)){
-        $result = mysqli_query($link,$sqlcheck1);
+    // Funzione di controllo esistenza e disponibilità del dipendente
+    function checkaddeddip($dipendente){
+      include __DIR__.'/../config.php';
+      $sqld = "SELECT username FROM dipendente WHERE username = '$dipendente'";
+      if (mysqli_query($link,$sqld)){
+        $result = mysqli_query($link,$sqld);
         $valori = mysqli_num_rows($result);
         if ($valori>0){
-          // Esiste il dipendente
-          $dip1esiste = 1;
-        }
-      } else {
-        echo "Error: ".$sqlcheck1."<br>".mysqli_error($link);
-      }
-      // Controllo disponibilità dipendente
-      $sqlavailable1="SELECT disponibilita FROM dipendente WHERE username='$dipendente1'";
-      if (mysqli_query($link,$sqlavailable1)){
-        $result = mysqli_query($link,$sqlavailable1);
-        if ($result == 1){
-          // Il dipendente è disponibile
-          $dipavailable1 = 1;
+          $sqlavailable = "SELECT disponibilita FROM dipendente WHERE username = '$dipendente'";
+          if (mysqli_query($link,$sqlavailable)){
+            $resulta = mysqli_query($link,$sqlavailable);
+            $row = mysqli_fetch_assoc($resulta);
+            $dipabailable = $row['disponibilita'];
+            if ($dipabailable == 1){
+              return 1;
+            } else{
+              return 0;
+            }
+          } else{
+            echo "Error: ".$sqlavailable."<br>".mysqli_error($link);
+          }
         } else{
-          $dipavailable1 = 0;
+          return 2;
+        }
+      } else{
+        echo "Error: ".$sqld."<br>".mysqli_error($link);
+      }
+    }
+    // Controllo esistenza e disponibilità per dipendente 1
+    if (!empty(trim($_POST["dip1"]))){
+      $dipendente1 = $_POST["dip1"];
+      $dip1ready = checkaddeddip($dipendente1);
+      if ($dip1ready == 1){
+        $dip1r = 1;
+      } else{
+        $dip1r = 0;
+        if ($dip1ready == 2){
+         $exist_err = 'Sono stati insertiti uno o più dipendenti non presenti sulla piattaforma.';
+        }
+        if ($dip1ready == 0){
+          $available_err = 'Sono stati inseriti uno o più dipendenti non disponibili';
         }
       }
-    }
-    if ($dip1esiste == 0 && $dip2esiste == 0 && $dip3esiste == 0 && 
-        $dip4esiste == 0 && $dip5esiste == 0 && $dip6esiste == 0){
-      $exist_err = 'Inserisci dipendenti esistenti';
-      $check = 1;
     } else{
-      $check = 0;
+      $dip1r = 1;
     }
-    if ($check == 0){
-      if($dipavailable1 == 0 && $dipavailable2 == 0 && $dipavailable3 == 0 &&
-         $dipavailable4 == 0 && $dipavailable5 == 0 && $dipavailable6 == 0){
-        $available_err = 'Inserisci dipendenti non impegnati';
-        $available = 1;
+    // Controllo esistenza e disponibilità per dipendente 2
+    if (!empty(trim($_POST["dip2"]))){
+      $dipendente2 = $_POST["dip2"];
+      $dip2ready = checkaddeddip($dipendente2);
+      if ($dip2ready == 1){
+        $dip2r = 1;
       } else{
-        $available = 0;
+        $dip2r = 0;
+        if ($dip2ready == 2){
+         $exist_err = 'Sono stati insertiti uno o più dipendenti non presenti sulla piattaforma.';
+        }
+        if ($dip2ready == 0){
+          $available_err = 'Sono stati inseriti uno o più dipendenti non disponibili';
+        }
       }
+    } else{
+      $dip2r = 1;
     }
-    if ($check==0 && $available==0){
-      // Inserimento nella tabella Gruppo
-      $sql="INSERT INTO gruppo_risoluzione (id_gruppo_risoluzione,username_agency)
+    // Controllo esistenza e disponibilità per dipendente 3
+    if (!empty(trim($_POST["dip3"]))){
+      $dipendente3 = $_POST["dip3"];
+      $dip3ready = checkaddeddip($dipendente3);
+      if ($dip3ready == 1){
+        $dip3r = 1;
+      } else{
+        $dip3r = 0;
+        if ($dip3ready == 2){
+         $exist_err = 'Sono stati insertiti uno o più dipendenti non presenti sulla piattaforma.';
+        }
+        if ($dip3ready == 0){
+          $available_err = 'Sono stati inseriti uno o più dipendenti non disponibili';
+        }
+      }
+    } else{
+      $dip3r = 1;
+    }
+    // Controllo esistenza e disponibilità per dipendente 4
+    if (!empty(trim($_POST["dip4"]))){
+      $dipendente4 = $_POST["dip4"];
+      $dip4ready = checkaddeddip($dipendente4);
+      if ($dip4ready == 1){
+        $dip4r = 1;
+      } else{
+        $dip4r = 0;
+        if ($dip4ready == 2){
+         $exist_err = 'Sono stati insertiti uno o più dipendenti non presenti sulla piattaforma.';
+        }
+        if ($dip4ready == 0){
+          $available_err = 'Sono stati inseriti uno o più dipendenti non disponibili';
+        }
+      }
+    } else{
+      $dip4r = 1;
+    }
+    // Controllo esistenza e disponibilità per dipendente 5
+    if (!empty(trim($_POST["dip5"]))){
+      $dipendente5 = $_POST["dip5"];
+      $dip5ready = checkaddeddip($dipendente5);
+      if ($dip5ready == 1){
+        $dip5r = 1;
+      } else{
+        $dip5r = 0;
+        if ($dip5ready == 2){
+         $exist_err = 'Sono stati insertiti uno o più dipendenti non presenti sulla piattaforma.';
+        }
+        if ($dip5ready == 0){
+          $available_err = 'Sono stati inseriti uno o più dipendenti non disponibili';
+        }
+      }
+    } else{
+      $dip5r = 1;
+    }
+    // Controllo esistenza e disponibilità per dipendente 6
+    if (!empty(trim($_POST["dip6"]))){
+      $dipendente6 = $_POST["dip6"];
+      $dip6ready = checkaddeddip($dipendente6);
+      if ($dip6ready == 1){
+        $dip6r = 1;
+      } else{
+        $dip6r = 0;
+        if ($dip6ready == 2){
+         $exist_err = 'Sono stati insertiti uno o più dipendenti non presenti sulla piattaforma.';
+        }
+        if ($dip6ready == 0){
+          $available_err = 'Sono stati inseriti uno o più dipendenti non disponibili';
+        }
+      }
+    } else{
+      $dip6r = 1;
+    }
+    // Controllo pre inserimento nel database
+    if ($dip1r == 1 &&  $dip2r == 1 &&  $dip3r == 1 &&  
+        $dip4r == 1 &&  $dip5r == 1 &&  $dip6r == 1){
+      include __DIR__.'/../config.php';
+      $id_gruppo_risoluzione = maxidgruppo()+1;
+      // Creazione gruppo
+      $sql="INSERT INTO gruppo_risoluzione (id_gruppo_risoluzione,username_ente)
       VALUES ('$id_gruppo_risoluzione','$username_agency')";
       if(mysqli_query($link,$sql)){
       } else{
         echo "Error: ".$sql."<br>".mysqli_error($link);
       }
-      // Inserimento nella tabella Partecipazione
-      $sqldip1="INSERT INTO partecipazione (id_gruppo_risoluzione,username_dipendente) 
-      VALUES ('$id_gruppo_risoluzione','$dipendente1')";
-      // Aggiornameno disponibilità
-      $sqldip1active="UPDATE dipendente SET disponibilita=0 WHERE username='$dipendente1'";
-      if(mysqli_query($link,$sqldip1)){
-      } else{
-        echo "Error: ".$sqlcheck1."<br>".mysqli_error($link);
+      // Funzione di link fra gruppo e dipendenti e relativo update di disponibilità per dipendenti
+      function insertdipendente($dip,$dipready){
+        include __DIR__.'/../config.php';
+        $id_gruppo_risoluzione = maxidgruppo();
+        if ($dipready==1){
+          $sql="INSERT INTO partecipazione (id_gruppo_risoluzione,username_dipendente)
+          VALUES ('$id_gruppo_risoluzione','$dip')";
+          // Aggiornameno disponibilità
+          $sqlactive="UPDATE dipendente SET disponibilita=0 WHERE username='$dip'";
+          if(mysqli_query($link,$sql)){
+          } else{
+            echo "Error: ".$sql."<br>".mysqli_error($link);
+          }
+          if(mysqli_query($link,$sqlactive)){
+          } else{
+            echo "Error: ".$sqlactive."<br>".mysqli_error($link);
+          }
+        }
       }
-      if(mysqli_query($link,$sqldip1active)){
-      } else{
-        echo "Error: ".$sqldip1active."<br>".mysqli_error($link);
-      }
+      // Inserimento dipendenti disponibili e controllati
+      insertdipendente($dipendente1,$dip1ready);
+      insertdipendente($dipendente2,$dip2ready);
+      insertdipendente($dipendente3,$dip3ready);
+      insertdipendente($dipendente4,$dip4ready);
+      insertdipendente($dipendente5,$dip5ready);
+      insertdipendente($dipendente6,$dip6ready);
+      header("location: view_group_agency.php?id=".$id_gruppo_risoluzione);
     }
   }
 }
@@ -111,13 +237,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/dh-row-text-image-right.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Features-Boxed.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Forum---Thread-listing1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Pretty-Registration-Form-1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Login-Form-Dark.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu.css">
-    <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/Sidebar-Menu1.css">
     <link rel="stylesheet" href="<?php __DIR__ ?>/../assets/css/styles.css">
   </head>
   <body>
@@ -128,7 +251,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             <div class="col-sm-12 col-lg-11 mx-auto">
               <div class="form-group">
                 <div class="intro">
-                  <h2 class="text-center">Nuovo Gruppo</h2>
+                  <h2 class="text-center">Nuovo Gruppo di Risoluzione</h2>
                   <p class="text-center">Registra un nuovo gruppo di risoluzione</p>
                 </div>
               </div>
@@ -136,7 +259,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
           </div>
           <div class="form-row justify-content-center">
             <div class="form-group"><label>ID Gruppo Risoluzione</label>
-              <input disabled="true" class="form-control" readonly="readonly" name="id_gruppo_risoluzione" 
+              <input disabled="true" class="form-control" readonly="readonly" name="id_gruppo_risoluzione"
               placeholder="<?php echo $id_gruppo_risoluzione; ?>" type="text"></div>
           </div>
           <br>
@@ -148,8 +271,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
           </div>
           <div class="form-row justify-content-center">
             <span style="color:red" class="help-block"><?php echo $at_least_err ?></span>
+          </div>
+          <div class="form-row justify-content-center">
             <span style="color:red" class="help-block"><?php echo $exist_err ?></span>
-            <span style="color:red" class="help-block"><?php echo $available_err ?></span>            
+          </div>
+          <div class="form-row justify-content-center">
+            <span style="color:red" class="help-block"><?php echo $available_err ?></span>
           </div>
           <br>
           <div class="form-row justify-content-center">
@@ -185,7 +312,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
               <button class="btn btn-success btn-block" id="creagruppo" type="submit">Crea Gruppo</button>
             </div>
             <div class="col-sm-4 col-lg-3">
-              <button onclick="location.href='choose_activity_agency.php'" 
+              <button onclick="location.href='choose_activity_agency.php'"
               type="button" class="btn btn-danger btn-block">Annulla</button>
             </div>
           </div>
